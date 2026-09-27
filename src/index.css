@@ -148,6 +148,56 @@
     );
   }
 
+  /* Continuous text carousel. The track holds the list twice and slides
+     exactly -50%, so the seam lands where the second copy begins and the
+     loop is invisible. Pauses on hover and on focus-within, which is what
+     makes the links inside it actually clickable. */
+  .marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 6%,
+      black 94%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 6%,
+      black 94%,
+      transparent
+    );
+  }
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: lx-marquee 46s linear infinite;
+  }
+  .marquee:hover .marquee__track,
+  .marquee:focus-within .marquee__track {
+    animation-play-state: paused;
+  }
+  @keyframes lx-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    /* No travel; the row becomes an ordinary horizontal scroller instead. */
+    .marquee {
+      overflow-x: auto;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .marquee__track {
+      animation: none;
+    }
+  }
+
   /* Label roll — two stacked copies of the text; hovering the button
      lifts the first out of the frame while the second rises from below.
      Lifted out of the navbar stylesheet (where it was scoped to .lxn) so

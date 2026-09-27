@@ -1,4 +1,5 @@
-import { LuxenMark, LuxenWordmark } from "@/components/brand/LuxenMark";
+import { useState } from "react";
+import { LuxenMark } from "@/components/brand/LuxenMark";
 
 type FooterLink = { label: string; href: string };
 
@@ -9,27 +10,6 @@ const cols: { title: string; links: FooterLink[] }[] = [
       { label: "About", href: "#top" },
       { label: "Philosophy", href: "#philosophy" },
       { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    title: "Services",
-    links: [
-      { label: "Website Design", href: "#features" },
-      { label: "AI Receptionist", href: "#features" },
-      { label: "CRM & Automation", href: "#features" },
-      { label: "Reputation Management", href: "#features" },
-      { label: "Local SEO", href: "#features" },
-    ],
-  },
-  {
-    title: "Industries",
-    links: [
-      { label: "HVAC", href: "#who-we-help" },
-      { label: "Dentists", href: "#who-we-help" },
-      { label: "Medical Spas", href: "#who-we-help" },
-      { label: "Attorneys", href: "#who-we-help" },
-      { label: "Roofing", href: "#who-we-help" },
-      { label: "View all", href: "#who-we-help" },
     ],
   },
   {
@@ -44,11 +24,50 @@ const cols: { title: string; links: FooterLink[] }[] = [
   },
 ];
 
+// Industries and Services are no longer link columns — they are the two
+// tabs of the carousel below, which is the only place they appear now.
+const TABS = {
+  industries: {
+    label: "Industries",
+    href: "#who-we-help",
+    items: [
+      "HVAC",
+      "Dentists",
+      "Medical Spas",
+      "Attorneys",
+      "Roofing",
+      "Plumbing",
+      "Electricians",
+      "Landscaping",
+      "Auto Repair",
+    ],
+  },
+  services: {
+    label: "Services",
+    href: "#features",
+    items: [
+      "Website Design",
+      "AI Receptionist",
+      "CRM & Automation",
+      "Reputation Management",
+      "Local SEO",
+      "Missed-Call Text Back",
+      "Appointment Booking",
+      "Lead Follow-Up",
+    ],
+  },
+} as const;
+
+type TabKey = keyof typeof TABS;
+
 export function Footer() {
+  const [tab, setTab] = useState<TabKey>("industries");
+  const active = TABS[tab];
+
   return (
     <footer className="border-t border-border bg-background bg-dots">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+        <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr]">
           <div>
             <a
               href="#top"
@@ -100,7 +119,76 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
+        {/* ── Tabs for the carousel below ── */}
+        <div
+          role="tablist"
+          aria-label="What we do and who we do it for"
+          className="mt-16 inline-flex items-center gap-1 rounded-full border border-border p-1"
+        >
+          {(Object.keys(TABS) as TabKey[]).map((key) => {
+            const on = key === tab;
+            return (
+              <button
+                key={key}
+                role="tab"
+                id={`footer-tab-${key}`}
+                aria-selected={on}
+                aria-controls="footer-marquee"
+                onClick={() => setTab(key)}
+                className={`rounded-full px-4 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  on
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {TABS[key].label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── The carousel. Full-bleed on purpose: it runs off both edges, so
+           it sits outside the max-w container rather than inside it. ── */}
+      <div
+        id="footer-marquee"
+        role="tabpanel"
+        aria-labelledby={`footer-tab-${tab}`}
+        className="marquee -mt-2 pb-14"
+      >
+        <div className="marquee__track">
+          {/* Two copies: the first is the real, focusable one; the second
+              exists only so the -50% slide has something to land on. */}
+          {[0, 1].map((copy) => (
+            <ul
+              key={copy}
+              aria-hidden={copy === 1 || undefined}
+              className="flex shrink-0 items-center"
+            >
+              {active.items.map((item) => (
+                <li key={item} className="flex items-center">
+                  <a
+                    href={active.href}
+                    tabIndex={copy === 1 ? -1 : undefined}
+                    className="whitespace-nowrap px-5 text-2xl text-muted-foreground/45 transition-colors duration-300 hover:text-foreground sm:text-3xl lg:text-4xl"
+                  >
+                    {item}
+                  </a>
+                  <span
+                    aria-hidden="true"
+                    className="text-2xl text-muted-foreground/25 sm:text-3xl lg:text-4xl"
+                  >
+                    ·
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-border py-8 sm:flex-row">
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Luxen Digital. All rights reserved.
           </p>
