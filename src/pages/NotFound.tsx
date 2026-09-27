@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { SEOHead } from "@/components/SEOHead";
+import { RollLabel } from "@/components/motion/RollLabel";
 
 const NotFound = () => {
   const location = useLocation();
@@ -34,7 +35,7 @@ const NotFound = () => {
           href="/"
           className="btn-gold mt-8 inline-flex items-center gap-2.5 rounded-full px-9 py-5 text-base font-bold"
         >
-          Return to Home
+          <RollLabel>Return to Home</RollLabel>
         </a>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw } from "lucide-react";
 import { useBooking } from "@/components/BookingModal";
 import { useInView } from "@/hooks/use-in-view";
 import { ChatPhone, type ChatMsg } from "@/components/sections/ChatPhone";
+import { RollLabel } from "@/components/motion/RollLabel";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -40,18 +41,18 @@ const MESSAGES: ChatMsg[] = [
 const TIMELINE = [
   {
     time: "9:41",
-    title: "Missed call answered",
-    desc: "AI texts back instantly.",
+    title: "Answered in seconds",
+    desc: "The text goes out before they try the next company on the list.",
   },
   {
     time: "9:42",
-    title: "Lead qualified",
-    desc: "AI collects the problem and details.",
+    title: "Qualified",
+    desc: "What broke, where it is, and how soon they need someone.",
   },
   {
     time: "9:43",
-    title: "Appointment booked",
-    desc: "Confirmed on the calendar, SMS reminder sent.",
+    title: "On the calendar",
+    desc: "Slotted against your real availability, reminder already queued.",
   },
 ];
 
@@ -127,7 +128,7 @@ export function WhoWeHelp() {
   return (
     <section
       id="who-we-help"
-      className="relative border-t border-border bg-background py-16 sm:py-20"
+      className="relative border-t border-border bg-background bg-dots py-16 sm:py-20"
     >
       <div className="mx-auto max-w-[1040px] px-[clamp(20px,5vw,40px)]">
         {/* Headline — full width, left-aligned, one headline + one line */}
@@ -242,13 +243,9 @@ export function WhoWeHelp() {
             <div className="mt-8 flex w-full justify-center min-[960px]:justify-start">
               <button
                 onClick={open}
-                className="inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-base font-bold transition-all duration-300 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                style={{
-                  background: "hsl(var(--accent))",
-                  color: "hsl(var(--accent-foreground))",
-                }}
+                className="btn-gold inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
-                Book a Strategy Call
+                <RollLabel>Book a Strategy Call</RollLabel>
                 <ArrowRight className="h-5 w-5" />
               </button>
             </div>

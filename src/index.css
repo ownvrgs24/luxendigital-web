@@ -93,11 +93,17 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Horizontal overflow is contained here, not on <body>. On <body> it
+       makes body the nearest scrollport for position: sticky while the
+       viewport is what actually scrolls, so every sticky descendant
+       silently stops pinning. `clip` does not create a scroll container
+       at all; `hidden` is the fallback for Safari < 16. */
+    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   body {
     @apply bg-background text-foreground;
-    overflow-x: hidden;
   }
 
   ::selection {
@@ -140,6 +146,37 @@
       hsl(42 95% 70%) 60%,
       hsl(43 80% 48%) 100%
     );
+  }
+
+  /* Label roll — two stacked copies of the text; hovering the button
+     lifts the first out of the frame while the second rises from below.
+     Lifted out of the navbar stylesheet (where it was scoped to .lxn) so
+     every CTA on the site shares one hover. */
+  .roll-label {
+    display: grid;
+    overflow: hidden;
+    height: 1.3em;
+    line-height: 1.3em;
+  }
+  .roll-label > span {
+    grid-area: 1 / 1;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .roll-label > span + span {
+    transform: translateY(110%);
+  }
+  .btn-gold:hover .roll-label > span:first-child,
+  .btn-gold:focus-visible .roll-label > span:first-child {
+    transform: translateY(-110%);
+  }
+  .btn-gold:hover .roll-label > span + span,
+  .btn-gold:focus-visible .roll-label > span + span {
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .roll-label > span {
+      transition: none;
+    }
   }
 
   /* Premium gold button — token-driven, reusable everywhere */
@@ -262,6 +299,18 @@
       0 2px 4px hsl(240 10% 6% / 0.04),
       0 12px 32px -12px hsl(240 10% 6% / 0.12),
       0 40px 80px -32px hsl(240 10% 6% / 0.16);
+  }
+
+  /* Paper texture for the light bands. One monochrome lattice, shared by
+     every white section so the page reads as a single surface rather than
+     a stack of differently-tinted panels. At ~5% it registers as texture
+     and never as decoration — if you can name the shape, it is too strong. */
+  .bg-dots {
+    background-image: radial-gradient(
+      hsl(var(--foreground) / 0.055) 1px,
+      transparent 1px
+    );
+    background-size: 22px 22px;
   }
 
   .bg-grid {

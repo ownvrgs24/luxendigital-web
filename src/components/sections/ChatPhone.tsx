@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, MessageSquare, Check } from "lucide-react";
+import { PhoneMissed, Check } from "lucide-react";
 import "./who-we-help-phone.css";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -109,8 +109,15 @@ export function ChatPhone({
       style={{
         // Width is fixed and explicit; height comes only from the ratio.
         // Fixes the small-on-load bug (content-based sizing).
-        ["--phone-w" as string]: "clamp(260px, 80vw, 340px)",
-        ["--phone-ratio" as string]: "9 / 16",
+        ["--phone-w" as string]: "clamp(240px, 74vw, 300px)",
+        // iPhone 15/16 Pro is 393 x 852pt — 19.5:9, not the 9:16 this
+        // was built at. 16:9 renders roughly 20% too short for its
+        // width, which is what made the proportions read as wrong.
+        // This ratio is the OUTER frame: the bezel subtracts the same
+        // number of pixels from width and height, so the frame has to
+        // be slightly less elongated for the screen inside it to land
+        // on 19.5:9. (R - 0.064) / 0.936 = 2.168 → R = 2.093.
+        ["--phone-ratio" as string]: "1 / 2.093",
         width: "var(--phone-w)",
         aspectRatio: "var(--phone-ratio)",
         height: "auto",
@@ -147,17 +154,17 @@ export function ChatPhone({
               </div>
             </div>
 
-            {/* Chat header */}
+            {/* Chat header — this is the owner's phone, so the thread is
+                 with the lead who called. The assistant is the one sending
+                 from the right; naming it here instead made the two sides
+                 of the conversation read as the same party. */}
             <div className="phone-chat-header">
               <div className="phone-avatar">
-                <MessageSquare className="phone-avatar-icon" />
+                <PhoneMissed className="phone-avatar-icon" />
               </div>
               <div>
-                <p className="phone-chat-name">Luxen AI Assistant</p>
-                <p className="phone-chat-status">
-                  <span className="phone-dot" />
-                  Online now
-                </p>
+                <p className="phone-chat-name">(512) 555-0147</p>
+                <p className="phone-chat-status">Missed call · 9:41 AM</p>
               </div>
             </div>
 
@@ -213,14 +220,11 @@ export function ChatPhone({
               </div>
             </div>
 
-            {/* Input bar */}
-            <div className="phone-input-bar">
-              <div className="phone-input-field">
-                <span>Type a message...</span>
-              </div>
-              <div className="phone-send-btn">
-                <ArrowRight className="phone-send-icon" />
-              </div>
+            {/* Footer — states who is replying. Replaces a decorative
+                 "Type a message..." field that implied the owner answered. */}
+            <div className="phone-ai-bar">
+              <span className="phone-ai-dot" />
+              Luxen AI is replying for you
             </div>
 
             {/* Home indicator */}

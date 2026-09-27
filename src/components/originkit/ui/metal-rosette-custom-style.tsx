@@ -11,8 +11,8 @@ import {
 import {
   FORMATIONS,
   armExtension,
-  easeOut,
-  lerp,
+  fitScale,
+  sampleFormation,
   parseLinearColor,
 } from "@/components/originkit/rosette/formations";
 
@@ -23,13 +23,20 @@ const FOV_DEG = 28;
 const TAU = Math.PI * 2;
 
 // ── Tunable constants ──────────────────────────────────────────────────
-// CUBE_SCALE: scales the cube group so the widest formation fills ~75–85%
-//   of col 1's width without clipping at any angle. Sized to formation 08
-//   (ext 1.0 — fully exploded rosette), the widest of the 8.
-export const CUBE_SCALE = 1.55;
-// IDLE_SPEED: radians/sec of the idle rotation. Doubled from the previous
-//   0.06 value. Time-based (uses dt), so identical on 60Hz and 120Hz.
-export const IDLE_SPEED = 0.12;
+// CUBE_FIT: target on-screen span, in cells, of a *solid* cube (ext 0).
+//   A fixed scale can't serve both ends: the solid cube spans 1 cell and
+//   the fully exploded rosette spans ~4.6, so one of the two is always
+//   tiny. The scale is normalised by span^FIT_FALLOFF instead — see the
+//   frame loop. At distance 32 / FOV 28° the visible frame is ~16 cells.
+export const CUBE_FIT = 5.0;
+// FIT_FALLOFF: 1 = every formation renders at an identical size (dead);
+//   0 = no normalisation (the original problem). 0.75 keeps the silhouette
+//   stable while still letting the open formations read as bigger.
+const FIT_FALLOFF = 0.75;
+// FOLLOW_RATE: how fast the rendered progress chases the scroll-written
+//   target, in e-folds/sec. Higher = tighter to the finger, lower = more
+//   glide. ~9 reads as "connected but not twitchy".
+const FOLLOW_RATE = 9;
 
 interface MaterialProps {
   roughness: number;
@@ -54,14 +61,11 @@ interface Props {
   motion: Partial<MotionProps>;
   camera: Partial<CameraProps>;
   style?: React.CSSProperties;
-  /** Formation index (0–7) — drives which cube shape is shown. When
-   *  provided, the rosette is scroll-scrubbed (no autoplay). */
-  formationRef?: React.RefObject<number>;
-  /** Morph progress within the current formation (0–1). 0→0.4 morphs
-   *  from the previous formation; 0.4→1.0 holds. */
-  localTRef?: React.RefObject<number>;
-  /** Exit progress (0–1) — eases the idle rotation to a stop. */
-  exitTRef?: React.RefObject<number>;
+  /** Continuous formation progress, 0 → FORMATIONS.length - 1. Scroll
+   *  writes it; the frame loop smooths it and interpolates between
+   *  formations. When provided the rosette is fully scroll-scrubbed —
+   *  it has no motion of its own. */
+  progressRef?: React.RefObject<number>;
   /** Reverse the rosette's rotation direction. */
   reverse?: boolean;
 }
@@ -78,9 +82,7 @@ function __OriginkitBase_MetalRosette(props: Partial<Props>) {
     speed = 50,
     distance = 30,
     style,
-    formationRef,
-    localTRef,
-    exitTRef,
+    progressRef,
     reverse = false,
   } = props;
 
@@ -102,9 +104,7 @@ function __OriginkitBase_MetalRosette(props: Partial<Props>) {
     hold: motion.hold,
     tilt: camera.tilt,
     sideTilt: camera.sideTilt,
-    formationRef,
-    localTRef,
-    exitTRef,
+    progressRef,
     reverse,
   });
   live.current = {
@@ -118,9 +118,7 @@ function __OriginkitBase_MetalRosette(props: Partial<Props>) {
     hold: motion.hold,
     tilt: camera.tilt,
     sideTilt: camera.sideTilt,
-    formationRef,
-    localTRef,
-    exitTRef,
+    progressRef,
     reverse,
   };
 
@@ -214,10 +212,11 @@ function __OriginkitBase_MetalRosette(props: Partial<Props>) {
     let last = -1;
     let spinAngle = 0;
     let cycle = 0;
-    let idleAngle = 0;
+    let smoothP = -1; // < 0 = not yet seeded from the scroll target
     let ext = 0;
     let pitchDeg = 35;
     const D2R = Math.PI / 180;
+    const MAX_P = FORMATIONS.length - 1;
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
@@ -230,44 +229,26 @@ function __OriginkitBase_MetalRosette(props: Partial<Props>) {
       ).matches;
       const dir = L.reverse ? -1 : 1;
 
-      // ── Formation-driven mode (scroll-scrubbed) ──────────────────
-      // When formationRef is supplied, the rosette's shape is derived
-      // deterministically from the formation index + local morph
-      // progress. One scroll position = one visual state. Scrolling
-      // backward reverses the morph precisely (scrubbed, not replayed).
-      const hasFormation =
-        L.formationRef !== undefined && L.formationRef !== null;
-
-      if (hasFormation) {
-        const fi = Math.max(
+      // ── Scroll-scrubbed mode ─────────────────────────────────────
+      // One continuous progress value (0 → MAX_P) is the only input.
+      // There is no motion of the rosette's own: stop scrolling and it
+      // settles. Scroll back and the morph reverses exactly.
+      if (L.progressRef) {
+        const target = Math.max(
           0,
-          Math.min(
-            FORMATIONS.length - 1,
-            Math.floor(L.formationRef.current ?? 0),
-          ),
+          Math.min(MAX_P, L.progressRef.current ?? 0),
         );
-        const lt = Math.max(0, Math.min(1, L.localTRef?.current ?? 1));
-        const exitT = Math.max(0, Math.min(1, L.exitTRef?.current ?? 0));
 
-        const prev = FORMATIONS[Math.max(0, fi - 1)];
-        const curr = FORMATIONS[fi];
+        // Exponential follow, framed in dt so it behaves the same at
+        // 60Hz and 120Hz. This is what turns a stepwise scroll signal
+        // (and a trackpad's spiky deltas) into continuous motion.
+        if (smoothP < 0 || reduceMotion) smoothP = target;
+        else smoothP += (target - smoothP) * (1 - Math.exp(-dt * FOLLOW_RATE));
 
-        // Morph: localT 0→0.4 transitions (eased), 0.4→1.0 holds.
-        const morphRaw = Math.min(lt / 0.4, 1);
-        const morphT = reduceMotion ? 1 : easeOut(morphRaw);
-
-        const spinTurns = lerp(prev.spin, curr.spin, morphT);
-        ext = lerp(prev.ext, curr.ext, morphT);
-        pitchDeg = lerp(prev.pitch, curr.pitch, morphT);
-
-        // Idle rotation — time-based (dt), so identical on 60Hz & 120Hz.
-        // IDLE_SPEED is doubled from the previous 0.06. The spin NEVER stops
-        // or slows because of scroll state — it runs at constant speed
-        // through steps, hold, undock, and back. Reduced motion: very slow.
-        if (!reduceMotion) {
-          idleAngle += dt * IDLE_SPEED;
-        }
-        spinAngle = spinTurns * TAU + idleAngle * dir;
+        const shape = sampleFormation(smoothP);
+        ext = shape.ext;
+        pitchDeg = shape.pitch;
+        spinAngle = shape.spin * TAU * dir;
       } else {
         // ── Autoplay fallback ──
         spinAngle = (spinAngle + dt * L.spin * D2R * dir) % TAU;
@@ -287,9 +268,10 @@ function __OriginkitBase_MetalRosette(props: Partial<Props>) {
       gl.uniform1f(uRoll, L.sideTilt * D2R);
       gl.uniform1f(uDist, d);
       gl.uniform1f(uFov, FOV_DEG * D2R);
-      gl.uniform1f(uTravel, ext * (L.travel / 100) * CELL);
+      const travel = ext * (L.travel / 100) * CELL;
+      gl.uniform1f(uTravel, travel);
       gl.uniform1f(uAspect, bw / Math.max(bh, 1));
-      gl.uniform1f(uScale, CUBE_SCALE);
+      gl.uniform1f(uScale, fitScale(travel, CUBE_FIT, FIT_FALLOFF, CELL));
       gl.uniform3f(
         uCamPos,
         Math.sin(yaw) * Math.cos(pitch) * d,

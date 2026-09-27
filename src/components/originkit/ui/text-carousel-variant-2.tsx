@@ -341,7 +341,12 @@ function __OriginkitBase_RotatingText({
           aria-hidden="true"
           style={{
             display: "inline-flex",
-            flexWrap: splitBy === "lines" ? "nowrap" : "wrap",
+            // Never wrap in row mode. The badge is sized from this span's
+            // scrollWidth, which is measured *after* layout — so allowing
+            // the words to wrap made it report the already-wrapped width,
+            // and the badge stayed narrow enough to keep them wrapped.
+            // "lines" mode still stacks, via flexDirection: column.
+            flexWrap: "nowrap",
             flexDirection: splitBy === "lines" ? "column" : "row",
             whiteSpace: "nowrap",
             position: "relative",

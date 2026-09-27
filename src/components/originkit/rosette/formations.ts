@@ -103,3 +103,39 @@ export function parseLinearColor(css: string, fallback: V3): V3 {
   }
   return fallback;
 }
+
+// ── Scroll-scrubbed sampling ────────────────────────────────────────────
+// Both helpers are pure so the scrub can be reasoned about (and tested)
+// without a WebGL context; the rosette's frame loop calls them per frame.
+
+/** Sample the formation table at a continuous progress value
+ *  (0 → FORMATIONS.length - 1). Shape eases into each formation with a
+ *  smoothstep so the eight states stay legible; spin stays mostly linear
+ *  in progress so angular velocity never falls to zero at a boundary. */
+export function sampleFormation(p: number) {
+  const max = FORMATIONS.length - 1;
+  const clamped = Math.max(0, Math.min(max, p));
+  const i = Math.max(0, Math.min(max - 1, Math.floor(clamped)));
+  const f = Math.max(0, Math.min(1, clamped - i));
+  const a = FORMATIONS[i];
+  const b = FORMATIONS[i + 1];
+  const s = f * f * (3 - 2 * f);
+  return {
+    spin: lerp(a.spin, b.spin, 0.65 * f + 0.35 * s),
+    ext: lerp(a.ext, b.ext, s),
+    pitch: lerp(a.pitch, b.pitch, s),
+  };
+}
+
+/** Scale that keeps the rosette a roughly constant on-screen size as its
+ *  arms extend. A solid cube spans 1 cell and the fully exploded rosette
+ *  ~4.6, so a fixed scale renders one of the two far too small.
+ *  `falloff` 1 = every formation identical, 0 = no normalisation. */
+export function fitScale(
+  travel: number,
+  fit: number,
+  falloff: number,
+  cell = 1,
+): number {
+  return fit / Math.pow(cell + 2 * travel, falloff);
+}

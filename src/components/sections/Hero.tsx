@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { useBooking } from "@/components/BookingModal";
 import { useRef } from "react";
 import RibbonGlow from "@/components/originkit/ui/ribbon-glow-custom-style";
+import { RollLabel } from "@/components/motion/RollLabel";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -15,7 +16,10 @@ export function Hero() {
     <section
       id="top"
       ref={containerRef}
-      className="relative min-h-screen overflow-hidden bg-background text-[#FAFAFA] flex items-center pt-28 pb-20 lg:pt-32 lg:pb-24"
+      // bg-foreground, not bg-background: the hero only looked black because
+      // the WebGL ribbon paints over it. With a white declared background and
+      // near-white text, a machine without WebGL rendered white on white.
+      className="relative min-h-screen overflow-hidden bg-foreground text-[#FAFAFA] flex items-center pt-28 pb-20 lg:pt-32 lg:pb-24"
     >
       {/* Ribbon Glow — deep black-dominant cinematic light field */}
       <div className="absolute inset-0 z-[1] pointer-events-auto">
@@ -85,7 +89,7 @@ export function Hero() {
             onClick={open}
             className="btn-gold group relative inline-flex items-center justify-center gap-2.5 rounded-full px-9 py-5 text-base sm:text-lg font-bold active:scale-[0.98]"
           >
-            Let&apos;s Talk
+            <RollLabel>Let&apos;s Talk</RollLabel>
             <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
           </button>
 

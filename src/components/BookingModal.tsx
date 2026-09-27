@@ -9,6 +9,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, ArrowLeft, Check } from "lucide-react";
 import { TRACKING, postTrackingEvent } from "@/lib/tracking";
+import { RollLabel } from "@/components/motion/RollLabel";
 
 const BOOKING_SRC =
   "https://crm.luxendigital.com/widget/booking/fXV07pL1FsAbe205S48w";
@@ -262,9 +263,11 @@ function BookingModalContent({ close }: { close: () => void }) {
                     disabled={!canProceed}
                     className="btn-gold group inline-flex items-center gap-2.5 rounded-full px-7 py-3 text-base font-bold disabled:opacity-40 disabled:shadow-none"
                   >
-                    {step === totalSteps - 1
-                      ? "See Available Times"
-                      : "Continue"}
+                    <RollLabel>
+                      {step === totalSteps - 1
+                        ? "See Available Times"
+                        : "Continue"}
+                    </RollLabel>
                     <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 </div>

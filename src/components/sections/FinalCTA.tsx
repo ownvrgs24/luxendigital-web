@@ -1,51 +1,231 @@
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import { Reveal } from "@/components/motion/Reveal";
 import { useBooking } from "@/components/BookingModal";
 
+// ── Wave constants ──────────────────────────────────────────────────────
+/** How fast a wavefront travels outward, px/sec. Slow enough to read. */
+const WAVE_SPEED = 118;
+/** One wavefront emitted this often, ms. Sets the spacing between rings. */
+const EMIT_MS = 430;
+/** e-folds/sec the circle chases the pointer. Higher = tighter to the hand. */
+const FOLLOW = 11;
+/** Peak stroke alpha of a freshly emitted ring. */
+const WAVE_ALPHA = 0.2;
+
+type Wave = { x: number; y: number; born: number };
+
 export function FinalCTA() {
   const { open } = useBooking();
-  return (
-    <section id="contact" className="relative overflow-hidden py-20 sm:py-28">
-      {/* ambient gold glow */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-1/2 top-1/2 h-[50vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,hsl(43_90%_60%_/_0.1),transparent_70%)]" />
-        <div className="absolute inset-0 bg-grid opacity-30 mask-fade-b" />
-      </div>
+  const reduce = useReducedMotion();
 
-      <div className="mx-auto max-w-4xl px-6 text-center lg:px-10">
+  const sectionRef = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Where the circle should be (pointer, or its resting spot) and where it
+  // actually is. Both live in refs: this runs per animation frame and must
+  // never re-render React.
+  const targetRef = useRef({ x: 0, y: 0 });
+  const posRef = useRef({ x: 0, y: 0 });
+  const homeRef = useRef({ x: 0, y: 0 });
+  const seededRef = useRef(false);
+
+  // The circle only replaces the cursor where there *is* a cursor, and only
+  // when the visitor hasn't asked for less motion.
+  const [tracking, setTracking] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const canvas = canvasRef.current;
+    const heading = headingRef.current;
+    const button = buttonRef.current;
+    if (!section || !canvas || !heading || !button) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+    let w = 0;
+    let h = 0;
+
+    /** The circle's resting spot: the middle of the headline. */
+    const measure = () => {
+      const s = section.getBoundingClientRect();
+      const hd = heading.getBoundingClientRect();
+      w = s.width;
+      h = s.height;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(w * dpr));
+      canvas.height = Math.max(1, Math.round(h * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      homeRef.current = {
+        x: hd.left - s.left + hd.width / 2,
+        y: hd.top - s.top + hd.height / 2,
+      };
+      if (!seededRef.current) {
+        seededRef.current = true;
+        posRef.current = { ...homeRef.current };
+        targetRef.current = { ...homeRef.current };
+      }
+    };
+    const place = () => {
+      const { x, y } = posRef.current;
+      button.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+    };
+
+    // ── Reduced motion: no travelling waves, no cursor chase. Draw the
+    //    rings once as a static set and leave the circle at rest.
+    if (reduce) {
+      const render = () => {
+        measure();
+        place();
+        ctx.clearRect(0, 0, w, h);
+        const { x, y } = homeRef.current;
+        for (let r = 180; r < Math.hypot(w, h) * 0.62; r += 155) {
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(255,255,255,0.055)";
+          ctx.stroke();
+        }
+      };
+      render();
+      const roStatic = new ResizeObserver(render);
+      roStatic.observe(section);
+      return () => roStatic.disconnect();
+    }
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(section);
+
+    // ── Pointer ───────────────────────────────────────────────────────
+    const onMove = (e: PointerEvent) => {
+      if (!fine.matches) return;
+      const s = section.getBoundingClientRect();
+      targetRef.current = { x: e.clientX - s.left, y: e.clientY - s.top };
+      setTracking(true);
+    };
+    const onLeave = () => {
+      targetRef.current = { ...homeRef.current };
+      setTracking(false);
+    };
+    section.addEventListener("pointermove", onMove);
+    section.addEventListener("pointerleave", onLeave);
+
+    // ── Frame loop ────────────────────────────────────────────────────
+    const waves: Wave[] = [];
+    let raf = 0;
+    let last = -1;
+    let lastEmit = 0;
+
+    const frame = (now: number) => {
+      raf = requestAnimationFrame(frame);
+      const dt = last < 0 ? 0 : Math.min(Math.max((now - last) / 1000, 0), 0.1);
+      last = now;
+
+      // Chase the pointer. Exponential follow, framed in dt so it feels the
+      // same at 60Hz and 120Hz.
+      const p = posRef.current;
+      const t = targetRef.current;
+      const k = 1 - Math.exp(-dt * FOLLOW);
+      p.x += (t.x - p.x) * k;
+      p.y += (t.y - p.y) * k;
+      place();
+
+      // Emit a wavefront at wherever the source is *right now*, and leave it
+      // anchored there forever. That single detail is the Doppler effect:
+      // a moving source leaves each ring behind at its birthplace, so the
+      // rings crowd together ahead of the motion and stretch out behind it.
+      if (now - lastEmit >= EMIT_MS) {
+        lastEmit = now;
+        waves.push({ x: p.x, y: p.y, born: now });
+      }
+
+      const maxR = Math.hypot(w, h) * 0.62;
+      ctx.clearRect(0, 0, w, h);
+      for (let i = waves.length - 1; i >= 0; i--) {
+        const wv = waves[i];
+        const r = ((now - wv.born) / 1000) * WAVE_SPEED;
+        if (r > maxR) {
+          waves.splice(i, 1);
+          continue;
+        }
+        // Fade as it travels, and ease the first moments in so a new ring
+        // doesn't pop into existence under the circle.
+        const life = r / maxR;
+        const a = WAVE_ALPHA * (1 - life) * Math.min(r / 60, 1);
+        ctx.beginPath();
+        ctx.arc(wv.x, wv.y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255,255,255,${a})`;
+        ctx.stroke();
+      }
+    };
+    raf = requestAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      section.removeEventListener("pointermove", onMove);
+      section.removeEventListener("pointerleave", onLeave);
+    };
+  }, [reduce]);
+
+  return (
+    <section
+      id="contact"
+      ref={sectionRef}
+      // The circle stands in for the pointer while it is over the section.
+      style={tracking ? { cursor: "none" } : undefined}
+      className="relative isolate select-none overflow-hidden bg-primary py-24 text-primary-foreground sm:py-32"
+    >
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 h-full w-full"
+      />
+
+      <div className="mx-auto max-w-3xl px-6 text-center">
         <Reveal>
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-            Let's Talk
-          </p>
-          <h2 className="mt-6 font-display text-3xl font-medium leading-[1.05] tracking-tight text-balance sm:text-4xl lg:text-6xl">
-            Ready to build a business that{" "}
-            <span className="gold-text">never stops working</span>?
+          <h2
+            ref={headingRef}
+            className="mx-auto max-w-[16ch] font-display text-4xl leading-[0.95] tracking-tight text-balance sm:text-6xl lg:text-7xl"
+          >
+            Ready to build a business that never stops working?
           </h2>
-          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Let's build something your competitors can't copy.
-          </p>
         </Reveal>
 
         <Reveal delay={0.15}>
-          <motion.button
-            onClick={open}
-            whileHover={{ y: -3 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="btn-gold group mt-10 inline-flex items-center gap-2.5 rounded-full px-11 py-5 text-lg font-bold"
-          >
-            Book Strategy Call
-            <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-          </motion.button>
-        </Reveal>
-
-        <Reveal delay={0.25}>
-          <p className="mt-6 text-sm text-muted-foreground">
-            No pressure, no obligation. Just a real conversation about your
-            business.
+          <p className="mx-auto mt-10 max-w-sm text-base leading-relaxed text-primary-foreground/55 sm:mt-12">
+            Let's build something your competitors can't copy. No pressure, no
+            obligation — just a real conversation about your business.
           </p>
         </Reveal>
       </div>
+
+      {/* The circle itself. Positioned from the section's top-left and moved
+          only by transform, so following the pointer never triggers layout.
+          It stays a real button: reachable by Tab, and the click target
+          wherever it happens to be. */}
+      <button
+        ref={buttonRef}
+        onClick={open}
+        className="group absolute left-0 top-0 flex h-24 w-24 items-center justify-center rounded-full text-center font-display text-[11px] leading-[1.15] tracking-[0.08em] text-accent-foreground transition-[box-shadow,scale] duration-500 ease-out hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-[hsl(var(--primary))] motion-reduce:transition-none sm:h-32 sm:w-32 sm:text-xs lg:h-36 lg:w-36 lg:text-sm"
+        style={{
+          // The same gradient as .btn-gold, applied directly rather than via
+          // the class: .btn-gold carries `transition: all`, which would fight
+          // the per-frame transform the cursor loop writes and smear the follow.
+          backgroundImage:
+            "linear-gradient(120deg, hsl(40 85% 44%) 0%, hsl(45 92% 56%) 50%, hsl(42 88% 50%) 100%)",
+          boxShadow:
+            "0 0 90px 26px hsl(var(--accent) / 0.42), 0 0 180px 60px hsl(var(--accent) / 0.16)",
+        }}
+      >
+        Let's
+        <br />
+        Talk
+      </button>
     </section>
   );
 }

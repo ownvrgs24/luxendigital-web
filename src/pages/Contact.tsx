@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { MobileCallBar } from "@/components/MobileCallBar";
 import { SEOHead } from "@/components/SEOHead";
 import { postTrackingEvent, TRACKING } from "@/lib/tracking";
+import { RollLabel } from "@/components/motion/RollLabel";
 
 // Custom field id for the "Questions" textarea (registered via CRM).
 const QUESTIONS_FIELD_ID = "SHWFEtxS1nmmx8O2Sw2l";
@@ -274,7 +275,9 @@ export default function Contact() {
                       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                       className="btn-gold group flex w-full items-center justify-center gap-2.5 rounded-full px-10 py-5 text-lg font-bold disabled:opacity-70"
                     >
-                      {submitting ? "Sending…" : "Send Message"}
+                      <RollLabel>
+                        {submitting ? "Sending…" : "Send Message"}
+                      </RollLabel>
                       {!submitting && (
                         <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                       )}

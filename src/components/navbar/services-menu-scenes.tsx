@@ -1,215 +1,193 @@
-import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
 
-// ── 8 preview scenes (CSS/HTML only, no images) ────────────────────────
-// Each scene loops only while active. When mounted fresh (key change),
-// the CSS animations restart automatically.
+// Every scene stays mounted; only the active one gets `is-on`, which both
+// reveals it and starts its CSS animations.
+const v = (name: string, value: number) =>
+  ({ [name]: value }) as CSSProperties;
 
-export function Scene({ id }: { id: string }) {
-  switch (id) {
-    case "website":
-      return (
-        <div className="lsm-scn lsm-scn-web">
-          <div className="bar">
+const STAR =
+  "M12 3l2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z";
+const PHONE_PATH =
+  "M5 4h3.5l2 5-2.5 1.5a11 11 0 0 0 5.5 5.5L15 13.5l5 2V19a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z";
+
+export function Scenes({ activeId }: { activeId: string }) {
+  const on = (id: string) => `scene${id === activeId ? " is-on" : ""}`;
+
+  return (
+    <>
+      <div className={on("website")} aria-hidden="true">
+        <div className="win card">
+          <div className="win__bar">
             <i />
             <i />
             <i />
           </div>
-          <div className="field">
-            <i />
-          </div>
-          <div className="field">
-            <i />
-          </div>
-          <div className="field">
-            <i />
-          </div>
-          <div className="btn-go lsm-pressed">Get a quote</div>
-          <div className="toast">
-            <b>New inquiry</b> from Dana R.
+          <div className="win__body">
+            <span className="fld">
+              <b />
+            </span>
+            <span className="fld">
+              <b />
+            </span>
+            <span className="btn-mini">Get a quote</span>
           </div>
         </div>
-      );
-    case "google":
-      return <GoogleScene />;
-    case "stay":
-      return (
-        <div className="lsm-scn lsm-scn-stay">
-          <div className="ring r1" />
-          <div className="ring r2" />
-          <div className="ring r3" />
-          <div className="hub">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M4 9v6h10l5 4V5l-5 4H4Z" />
-              <path d="M16 9a3 3 0 0 1 0 6" />
+        <div className="toast">
+          <i />
+          New inquiry from Dana R.
+        </div>
+      </div>
+
+      <div className={on("google")} aria-hidden="true">
+        <div className="serp">
+          <div className="serp__q card">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="6" />
+              <path d="M20 20l-4.5-4.5" />
             </svg>
+            <span className="type">roof repair near me</span>
           </div>
-          <div className="ppl p1">J</div>
-          <div className="ppl p2">M</div>
-          <div className="ppl p3">K</div>
-          <div className="ppl p4">D</div>
-          <div className="cap">
+          <ol className="serp__list">
+            <li className="r r--you card">
+              <b>Your business</b>
+              <small>4.9 stars, open now</small>
+            </li>
+            <li className="r r--other card">
+              <b>Metro Roofing Co.</b>
+              <small>3.8 stars</small>
+            </li>
+            <li className="r r--other card">
+              <b>A1 Home Pros</b>
+              <small>4.1 stars</small>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <div className={on("stay")} aria-hidden="true">
+        <div className="col">
+          <div className="bcast">
+            <span className="ring" />
+            <span className="ring" />
+            <span className="hub">
+              <svg viewBox="0 0 24 24">
+                <path d="M3 10v4h4l6 4V6l-6 4H3z" />
+                <path d="M16.5 9a4 4 0 0 1 0 6" />
+              </svg>
+            </span>
+            <span className="av">MK</span>
+            <span className="av">JT</span>
+            <span className="av">RL</span>
+            <span className="av">SD</span>
+          </div>
+          <p className="cap">
             Spring tune-up reminder sent to 214 past customers
-          </div>
+          </p>
         </div>
-      );
-    case "missed":
-      return (
-        <div className="lsm-scn lsm-scn-miss">
-          <div className="card">
-            <svg
-              className="ph"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 4a15 15 0 0 0 0 16M19 4a15 15 0 0 1 0 16" />
-              <path d="M3 12h18" />
+      </div>
+
+      <div className={on("missed")} aria-hidden="true">
+        <div className="chat">
+          <div className="call card">
+            <svg viewBox="0 0 24 24">
+              <path d={PHONE_PATH} />
+              <path d="M16 3l5 5M21 3l-5 5" />
             </svg>
-            Missed call · 9:41
+            <div>
+              <b>Missed call</b>
+              <small>(555) 204-8812, 2:14 PM</small>
+            </div>
           </div>
-          <div className="out">
+          <p className="bub bub--out">
             Sorry we missed you. What can we help with today?
+          </p>
+          <span className="auto">Sent automatically</span>
+          <p className="bub bub--in">Need a quote for gutter cleaning</p>
+        </div>
+      </div>
+
+      <div className={on("inbox")} aria-hidden="true">
+        <ul className="stack">
+          <li className="stack__head">
+            Inbox <span className="badge" />
+          </li>
+          {[
+            ["Text", "Can you come Thursday?"],
+            ["Email", "Question about my invoice"],
+            ["Facebook", "Do you service Westfield?"],
+            ["Voicemail", "Leak under the sink, 0:42"],
+          ].map(([src, text], i) => (
+            <li key={src} className="msg card" style={v("--d", i)}>
+              <span className="src">{src}</span>
+              <b>{text}</b>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className={on("phone")} aria-hidden="true">
+        <div className="lines">
+          <div className="pline card">
+            <div>
+              <small>Personal</small>
+              <b>(555) 318-2270</b>
+            </div>
+            <span className="tag tag--quiet">After hours off</span>
           </div>
-          <div className="tag">Sent automatically</div>
-          <div className="reply">
-            My AC stopped cooling, can someone come today?
+          <div className="pline pline--biz card">
+            <div>
+              <small>Business line</small>
+              <b>(555) 204-8812</b>
+            </div>
+            <span className="tag tag--ring">
+              <svg viewBox="0 0 24 24">
+                <path d={PHONE_PATH} />
+              </svg>
+              Incoming
+            </span>
           </div>
         </div>
-      );
-    case "inbox":
-      return (
-        <div className="lsm-scn lsm-scn-inb">
-          <div className="badge">4</div>
-          <div className="msg l">
-            <div className="src">T</div>Text · Dana
-          </div>
-          <div className="msg r">
-            <div className="src">E</div>Email · Quote
-          </div>
-          <div className="msg l">
-            <div className="src">F</div>FB · Mike
-          </div>
-          <div className="msg r">
-            <div className="src">V</div>Voicemail
-          </div>
+      </div>
+
+      <div className={on("followup")} aria-hidden="true">
+        <div className="track">
+          <span className="track__fill" />
+          {[
+            ["Day 1", "Text"],
+            ["Day 3", "Email"],
+            ["Day 7", "Reminder"],
+            ["Booked", "Job on Jun 14"],
+          ].map(([when, what]) => (
+            <div key={when} className="node">
+              <i />
+              <b>{when}</b>
+              <small>{what}</small>
+            </div>
+          ))}
         </div>
-      );
-    case "phone":
-      return (
-        <div className="lsm-scn lsm-scn-ph">
-          <div className="line">
-            <div className="lab">
-              <span className="dot" />
-              Personal
-            </div>
-            <span>After hours off</span>
-          </div>
-          <div className="line biz">
-            <div className="lab">
-              <span className="dot" />
-              Business line
-            </div>
-            <span className="tag">Incoming</span>
-          </div>
-        </div>
-      );
-    case "followup":
-      return (
-        <div className="lsm-scn lsm-scn-fu">
-          <div className="track">
-            <div className="fill" />
-          </div>
-          <div className="nodes">
-            <div className="node">
-              <div className="d" />
-              <div className="lbl">Day 1 Text</div>
-            </div>
-            <div className="node">
-              <div className="d" />
-              <div className="lbl">Day 3 Email</div>
-            </div>
-            <div className="node">
-              <div className="d" />
-              <div className="lbl">Day 7 Reminder</div>
-            </div>
-            <div className="node">
-              <div className="d" />
-              <div className="lbl">Booked</div>
-            </div>
-          </div>
-        </div>
-      );
-    case "reviews":
-      return (
-        <div className="lsm-scn lsm-scn-rev">
+      </div>
+
+      <div className={on("reviews")} aria-hidden="true">
+        <div className="rev">
           <div className="stars">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <svg key={i} viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 3.5l2.3 4.7 5.2.8-3.8 3.7.9 5.2-4.6-2.4-4.6 2.4.9-5.2L4.5 9l5.2-.8Z" />
+            {Array.from({ length: 5 }, (_, i) => (
+              <svg key={i} viewBox="0 0 24 24" style={v("--d", i)}>
+                <path d={STAR} />
               </svg>
             ))}
           </div>
-          <div className="count">
-            4.9 from <b /> reviews
+          <div className="score">
+            <b>4.9</b>
+            <small>
+              from <span className="count" /> reviews
+            </small>
           </div>
-          <div className="quote">
-            "On time, fixed it right, and cleaned up. Highly recommend." — Tom
-            P.
-          </div>
+          <p className="quote">
+            &ldquo;Showed up on time and fixed the leak in under an
+            hour.&rdquo;
+          </p>
         </div>
-      );
-    default:
-      return null;
-  }
-}
-
-// Google scene needs a typed search string; runs on mount.
-function GoogleScene() {
-  const spanRef = useRef<HTMLSpanElement>(null);
-  const reduceRef = useRef(
-    typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-
-  useEffect(() => {
-    const span = spanRef.current;
-    if (!span) return;
-    const text = "roof repair near me";
-    if (reduceRef.current) {
-      span.textContent = text;
-      return;
-    }
-    span.textContent = "";
-    let i = 0;
-    const t = setInterval(() => {
-      i += 1;
-      span.textContent = text.slice(0, i);
-      if (i >= text.length) clearInterval(t);
-    }, 90);
-    return () => clearInterval(t);
-  }, []);
-
-  return (
-    <div className="lsm-scn lsm-scn-goo">
-      <div className="search">
-        <span ref={spanRef} />
-        <span className="caret" />
       </div>
-      <div className="results">
-        <div className="res me">Your business</div>
-        <div className="res">Apex Roofing</div>
-        <div className="res">Cornerstone Co.</div>
-      </div>
-    </div>
+    </>
   );
 }

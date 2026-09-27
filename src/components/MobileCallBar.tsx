@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useBooking } from "@/components/BookingModal";
+import { RollLabel } from "@/components/motion/RollLabel";
 
 /**
  * Mobile-only fixed bottom "Book A Call" bar.
@@ -38,7 +39,7 @@ export function MobileCallBar() {
               onClick={open}
               className="btn-gold group flex w-full items-center justify-center gap-2.5 rounded-full px-8 py-4 text-lg font-bold active:scale-[0.98]"
             >
-              Book A Call
+              <RollLabel>Book A Call</RollLabel>
               <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
           </div>
