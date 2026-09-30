@@ -344,6 +344,39 @@
       0 2px 8px -2px hsl(214 90% 55% / 0.3);
   }
 
+  /* Skeleton shimmer. A pulsing opacity reads as "something is broken";
+     a single light sweeping left to right reads as "something is coming".
+     Used by the review embed while the third-party widget boots. */
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+    background: hsl(var(--muted));
+  }
+  .shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--foreground) / 0.07) 50%,
+      transparent 100%
+    );
+    animation: lx-shimmer 1.7s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes lx-shimmer {
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    /* No sweep; the blocks stay as quiet placeholders. */
+    .shimmer::after {
+      animation: none;
+    }
+  }
+
   .shadow-float {
     box-shadow:
       0 2px 4px hsl(240 10% 6% / 0.04),

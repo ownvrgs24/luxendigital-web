@@ -19,7 +19,12 @@
   --pill-h: 52px;
 
   color: var(--text);
-  font-family: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    "Archivo",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 @media (min-width: 861px) {
@@ -98,7 +103,9 @@ body.menu-open {
 }
 @media (prefers-reduced-motion: reduce) {
   .lxn .nav__bar {
-    transition: background 0.35s, border-color 0.35s;
+    transition:
+      background 0.35s,
+      border-color 0.35s;
   }
 }
 .lxn .logo {
@@ -129,6 +136,7 @@ body.menu-open {
 }
 
 .lxn .nav__item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -151,6 +159,29 @@ body.menu-open {
 .lxn .nav__item[aria-expanded="true"] {
   background: rgba(241, 236, 227, 0.07);
   color: var(--text);
+}
+
+/* You-are-here. The amber wash alone is easy to mistake for a hover state,
+   so the rule underneath is what actually carries the meaning — it is the
+   one thing on the bar that hovering another link never produces. */
+.lxn .nav__item.is-current {
+  color: var(--text);
+  background: rgba(244, 185, 44, 0.12);
+}
+.lxn .nav__item.is-current::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 5px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--amber);
+}
+@media (prefers-contrast: more), (forced-colors: active) {
+  .lxn .nav__item.is-current {
+    outline: 1px solid currentColor;
+  }
 }
 .lxn .nav__item:focus-visible,
 .lxn .btn:focus-visible,
@@ -411,6 +442,25 @@ body.menu-open {
     transform 0.45s var(--ease),
     translate 0.5s var(--ease);
 }
+/* You-are-here, inside the services list. The .is-active highlight travels
+   with the pointer, so it can't also mean "the page you're on" — this marker
+   is the one thing in the list that survives hovering a different row. It
+   deliberately stays off the icon tile, which .is-active and the mobile
+   accordion both already fill. */
+.lxn .svc.is-current .svc__title {
+  color: var(--amber);
+}
+.lxn .svc.is-current .svc__title::after {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-left: 9px;
+  border-radius: 50%;
+  background: var(--amber);
+  vertical-align: middle;
+}
+
 .lxn .svc__caret {
   flex: none;
   width: 18px;
@@ -577,6 +627,19 @@ body.menu-open {
   text-decoration: none;
   border-bottom: 1px solid var(--line);
 }
+.lxn .mega__more a.is-current {
+  color: var(--amber);
+}
+.lxn .mega__more a.is-current::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--amber);
+}
 .lxn .mega__more .btn {
   margin-top: 18px;
   height: 52px;
@@ -697,6 +760,11 @@ body.menu-open {
   .lxn .svc.is-active .svc__title {
     color: var(--text);
     transform: translateX(3px);
+  }
+  /* Higher specificity than the dim-the-others rule above, so the page you're
+     on stays lit while its neighbours fade back. */
+  .lxn .mega__list:hover .svc.is-current:not(.is-active) .svc__title {
+    color: var(--amber);
   }
   .lxn .svc.is-active .svc__icon {
     color: var(--amber-ink);

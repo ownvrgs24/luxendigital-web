@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { Reveal } from "@/components/motion/Reveal";
 
 type Reason = {
   title: string;
@@ -40,67 +40,55 @@ const reasons: Reason[] = [
   },
 ];
 
-const floatDurations = [7, 8.5, 6.5, 9, 7.5, 8, 6.8, 9.5];
-
+/**
+ * The eight commitments, as a ruled editorial list.
+ *
+ * These used to be eight cards bobbing on eight different loops at once. One
+ * floating card is a flourish; eight of them is a page that won't sit still
+ * while you try to read it. The motion now happens on arrival and on hover,
+ * where it means something.
+ */
 export function WhyLuxen() {
   return (
-    <section id="why" className="relative py-14 sm:py-16">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <section
+      id="why"
+      className="relative border-t border-border/60 py-20 sm:py-28"
+    >
+      <div className="mx-auto max-w-6xl px-6 lg:px-10">
+        <Reveal className="max-w-2xl">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
+            What you get
+          </p>
+          <h2 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance sm:text-4xl lg:text-5xl">
+            Eight commitments that don&rsquo;t expire at launch.
+          </h2>
+        </Reveal>
+
+        <div className="mt-12 grid gap-x-14 md:grid-cols-2">
           {reasons.map((r, i) => (
-            <FloatingCard key={r.title} index={i} reason={r} />
+            <Reveal key={r.title} delay={(i % 2) * 0.08}>
+              <article className="group relative border-t border-border py-7">
+                {/* A gold rule that draws itself across the divider on hover. */}
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-px left-0 h-px w-0 gold-gradient transition-all duration-500 group-hover:w-full motion-reduce:transition-none"
+                />
+                <div className="flex items-baseline gap-4">
+                  <span className="font-display text-sm font-medium tabular-nums text-accent/70 transition-colors duration-300 group-hover:text-accent">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="font-display text-lg font-medium tracking-tight text-foreground sm:text-xl">
+                    {r.title}
+                  </h3>
+                </div>
+                <p className="mt-3 pl-9 text-sm leading-relaxed text-muted-foreground">
+                  {r.desc}
+                </p>
+              </article>
+            </Reveal>
           ))}
         </div>
       </div>
     </section>
-  );
-}
-
-function FloatingCard({ index, reason }: { index: number; reason: Reason }) {
-  const reduceMotion = useReducedMotion();
-  const duration = floatDurations[index % floatDurations.length];
-  const delay = (index % 4) * 0.6;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-8%" }}
-      transition={{
-        duration: 0.7,
-        ease: [0.22, 1, 0.36, 1],
-        delay: (index % 4) * 0.08,
-      }}
-      className="h-full"
-    >
-      <motion.div
-        animate={reduceMotion ? undefined : { y: [0, -10, 0] }}
-        transition={
-          reduceMotion
-            ? undefined
-            : {
-                duration,
-                delay,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }
-        }
-        whileHover={reduceMotion ? undefined : { y: -14, scale: 1.015 }}
-        className="group relative h-full overflow-hidden rounded-2xl border border-border bg-card/80 p-7 shadow-lux backdrop-blur-sm transition-colors duration-300 hover:border-accent/40 lg:p-8"
-      >
-        <span className="absolute left-0 top-7 h-px w-8 bg-accent/60 transition-all duration-300 group-hover:w-12" />
-        <div className="pl-6">
-          <span className="font-display text-xs font-medium tracking-[0.2em] text-accent/70">
-            {String(index + 1).padStart(2, "0")}.
-          </span>
-          <h3 className="mt-3 font-display text-lg font-medium tracking-tight text-foreground sm:text-xl">
-            {reason.title}
-          </h3>
-          <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">
-            {reason.desc}
-          </p>
-        </div>
-      </motion.div>
-    </motion.div>
   );
 }

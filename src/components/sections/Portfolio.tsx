@@ -1,94 +1,62 @@
 import { motion } from "framer-motion";
-import { Reveal } from "@/components/motion/Reveal";
 import { ArrowUpRight } from "lucide-react";
-
-const projects = [
-  {
-    title: "Northwind HVAC",
-    category: "HVAC",
-    img: "https://vibe.filesafe.space/1788847884528312040/assets/e22301b2-40e8-47f3-90c3-785f359a4089.png",
-    blurb: "Booking-ready site with AI receptionist and review funnel.",
-    span: "lg:col-span-7",
-  },
-  {
-    title: "Lumière MedSpa",
-    category: "Medical Spa",
-    img: "https://vibe.filesafe.space/1788847884528312040/assets/8477f37a-2c4c-40ca-a865-e4bb94c1c5a3.png",
-    blurb: "Editorial design with online scheduling and reminders.",
-    span: "lg:col-span-5",
-  },
-  {
-    title: "Brightline Dental",
-    category: "Dentistry",
-    img: "https://vibe.filesafe.space/1788847884528312040/assets/5a7ed3ee-5e5e-4bb2-b200-08857062d7ab.png",
-    blurb: "Trust-first layout with automated patient follow-up.",
-    span: "lg:col-span-5",
-  },
-  {
-    title: "Fast Fix North County",
-    category: "Jewelry Store",
-    img: "https://vibe.filesafe.space/1788847884528312040/attachments/1bfff326-76ec-4ebd-9716-32d10d635165.png",
-    blurb:
-      "Multi-location booking system with automated estimate workflows and review funnel.",
-    span: "lg:col-span-7",
-    mirror: true,
-  },
-];
+import { Reveal } from "@/components/motion/Reveal";
+import { useBooking } from "@/components/BookingModal";
+import { PROJECTS, BUILD_STANDARDS, type Project } from "@/content/work";
 
 export function Portfolio() {
+  const { open } = useBooking();
+
   return (
     <section
       id="portfolio"
-      className="relative scroll-mt-24 border-t border-border/60 bg-background py-20 sm:py-28"
+      className="relative scroll-mt-24 border-t border-border/60 bg-background pb-20 pt-12 sm:pb-28 sm:pt-16"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <Reveal className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
-          <div className="max-w-xl">
-            <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-              Selected Work
-            </p>
-            <h2 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance sm:text-4xl lg:text-5xl">
-              A look at what we build.
-            </h2>
-          </div>
-          <p className="max-w-sm text-sm text-muted-foreground">
-            Every site is custom — designed around the business, not a template.
-            Editorial, minimal, fast.
-          </p>
-        </Reveal>
-
-        <div className="mt-10 grid gap-5 lg:grid-cols-12">
-          {projects.map((p, i) => (
+        {/* No heading here — the page's own <h1> already introduces the grid,
+            and two identical titles in a row read as a mistake. */}
+        {/* items-start, not stretch: the 7- and 5-column cards hold images of
+            different heights, and stretching them to match leaves a pool of
+            dead space under the shorter card's copy. */}
+        <div className="grid items-start gap-5 lg:grid-cols-12">
+          {PROJECTS.map((p, i) => (
             <Reveal key={p.title} className={p.span} delay={i * 0.08}>
-              <ProjectCard {...p} />
+              <ProjectCard project={p} index={i} onEnquire={open} />
             </Reveal>
           ))}
         </div>
+
+        <Standards />
       </div>
     </section>
   );
 }
 
 function ProjectCard({
-  title,
-  category,
-  img,
-  blurb,
-  mirror,
+  project,
+  index,
+  onEnquire,
 }: {
-  title: string;
-  category: string;
-  img: string;
-  blurb: string;
-  mirror?: boolean;
+  project: Project;
+  index: number;
+  onEnquire: () => void;
 }) {
+  const { title, category, img, blurb, tags, mirror } = project;
+
   return (
-    <motion.a
-      href="#contact"
+    <motion.button
+      type="button"
+      onClick={onEnquire}
       whileHover="hover"
-      className="group relative block h-full overflow-hidden rounded-3xl border border-border bg-card shadow-lux"
+      // Every card used to point at #contact, an anchor that doesn't exist on
+      // this page — so the whole grid was dead. The booking sheet is the
+      // actual next step, and it works from anywhere.
+      aria-label={`${title} — ${category}. Start a project like this`}
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-3xl border border-border bg-card text-left shadow-lux transition-colors duration-300 hover:border-accent/50"
     >
-      <div className="relative aspect-[16/10] overflow-hidden">
+      {/* The screenshot is the point, so nothing is written across it — the
+          copy sits underneath where it stays readable on any image. */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
         {mirror && (
           <img
             src={img}
@@ -109,7 +77,11 @@ function ProjectCard({
           variants={{ hover: { scale: mirror ? 1.02 : 1.05 } }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         />
-        <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-90" />
+
+        <span className="absolute left-5 top-5 z-20 rounded-full bg-black/45 px-2.5 py-1 font-display text-[11px] font-semibold tracking-[0.2em] text-white/90 backdrop-blur-sm">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+
         <motion.div
           className="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full glass text-foreground"
           variants={{ hover: { rotate: 0, scale: 1.1 } }}
@@ -117,22 +89,60 @@ function ProjectCard({
         >
           <ArrowUpRight className="h-5 w-5" />
         </motion.div>
-        <div className="absolute inset-x-0 bottom-0 z-20 p-6">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent">
-            {category}
-          </p>
-          <h3 className="mt-1.5 font-display text-2xl font-medium text-white">
-            {title}
-          </h3>
-          <motion.p
-            className="mt-1 max-w-md text-sm text-white/80"
-            variants={{ hover: { opacity: 1, y: 0 } }}
-            initial={{ opacity: 0, y: 8 }}
-          >
-            {blurb}
-          </motion.p>
-        </div>
       </div>
-    </motion.a>
+
+      <div className="flex flex-1 flex-col border-t border-border p-6 sm:p-7">
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-accent">
+          {category}
+        </p>
+        <h3 className="mt-2 font-display text-2xl font-medium text-foreground">
+          {title}
+        </h3>
+        {/* Always visible. This used to fade in on hover, which meant every
+            phone visitor — most of them — never read a word of it. */}
+        <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+          {blurb}
+        </p>
+        <ul className="mt-5 flex flex-wrap gap-2">
+          {tags.map((t) => (
+            <li
+              key={t}
+              className="rounded-full border border-border bg-secondary/60 px-3 py-1 text-xs font-medium text-foreground/75"
+            >
+              {t}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </motion.button>
+  );
+}
+
+/** The through-line between four different businesses. */
+function Standards() {
+  return (
+    <Reveal delay={0.15}>
+      <div className="mt-14 rounded-3xl border border-border bg-secondary/40 p-8 sm:p-10">
+        <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
+          The standard
+        </p>
+        <h2 className="mt-3 max-w-2xl font-display text-2xl font-medium tracking-tight text-balance text-foreground sm:text-3xl">
+          Different businesses. The same four things, every time.
+        </h2>
+        <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {BUILD_STANDARDS.map((s) => (
+            <li key={s.title}>
+              <div className="h-1.5 w-12 rounded-full gold-gradient" />
+              <p className="mt-4 font-display text-base font-medium text-foreground">
+                {s.title}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {s.body}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Reveal>
   );
 }

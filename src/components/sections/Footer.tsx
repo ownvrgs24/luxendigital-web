@@ -6,40 +6,76 @@ import {
 import { ArrowRight } from "lucide-react";
 import { useReducedMotion } from "framer-motion";
 import { LuxenMark } from "@/components/brand/LuxenMark";
+import { SocialIcons } from "@/components/brand/SocialIcons";
 import { Reveal } from "@/components/motion/Reveal";
 import { RollLabel } from "@/components/motion/RollLabel";
+import { ScrambleText } from "@/components/motion/ScrambleText";
 import { useBooking } from "@/components/BookingModal";
 import { useInView } from "@/hooks/use-in-view";
+import { SERVICES } from "@/components/navbar/services-menu-data";
+import { LEGAL_DOCS } from "@/content/legal";
 
 type FooterLink = { label: string; href: string };
 
+/**
+ * Four columns, grouped by what a visitor is actually trying to do: find out
+ * who we are, find the thing they need, answer a question before buying, or
+ * check the small print.
+ *
+ * Two of these used to be bare hashes — "About" pointed at `#top`, which just
+ * scrolled you up whatever page you were already on, and "Philosophy" at
+ * `#philosophy`, an anchor that only exists on the home page and therefore
+ * did nothing from anywhere else. Both now point at real routes.
+ *
+ * The services column is built from SERVICES, so the footer can never offer a
+ * service page that has been renamed or removed.
+ */
 const cols: { title: string; links: FooterLink[] }[] = [
   {
     title: "Company",
     links: [
-      { label: "About", href: "#top" },
-      { label: "Philosophy", href: "#philosophy" },
+      { label: "About Us", href: "/why-luxen" },
+      { label: "Our Work", href: "/work" },
+      { label: "Reviews", href: "/testimonials" },
+      { label: "Philosophy", href: "/#philosophy" },
       { label: "Contact", href: "/contact" },
     ],
   },
   {
+    title: "Services",
+    links: SERVICES.map((s) => ({
+      label: s.title,
+      href: `/services/${s.slug}`,
+    })),
+  },
+  {
     title: "Resources",
     links: [
-      { label: "Process", href: "/#journey" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Our Work", href: "/work" },
-      { label: "Testimonials", href: "/testimonials" },
+      { label: "Our Process", href: "/#journey" },
+      { label: "Industries We Serve", href: "/#who-we-help" },
       { label: "FAQ", href: "/faq" },
+      { label: "Book a Strategy Call", href: "/contact" },
     ],
+  },
+  {
+    title: "Legal",
+    links: LEGAL_DOCS.map((d) => ({
+      label: d.nav,
+      href: `/legal/${d.slug}`,
+    })),
   },
 ];
 
 // Industries and Services are no longer link columns — they are the two
 // tabs of the carousel below, which is the only place they appear now.
+// Root-relative, not bare hashes: these render in the footer of every page,
+// and `#who-we-help` only resolves on the home page — everywhere else the
+// whole carousel was a row of links that did nothing.
 const TABS = {
   industries: {
     label: "Industries",
-    href: "#who-we-help",
+    href: "/#who-we-help",
     items: [
       "HVAC",
       "Dentists",
@@ -54,7 +90,7 @@ const TABS = {
   },
   services: {
     label: "Services",
-    href: "#features",
+    href: "/#features",
     items: [
       "Website Design",
       "AI Receptionist",
@@ -261,29 +297,48 @@ export function Footer() {
         </div>
       </div>
 
-      {/* ── Functional footer. Deliberately small and quiet: it sits between
-           the CTA and the wordmark and should not compete with either. ── */}
+      {/* ── Functional footer. The brand block keeps the contact details
+           together in one place — email, phone, and where we work — and the
+           four link columns sit beside it on a desktop, wrapping to two on a
+           tablet and one on a phone. ── */}
       <div className="border-t border-border">
-        <div className="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:px-10">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.6fr_1fr_1fr]">
-            <div className="col-span-2 lg:col-span-1">
+        <div className="mx-auto max-w-7xl px-6 py-14 sm:py-16 lg:px-10">
+          <div className="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-[1.25fr_repeat(4,minmax(0,1fr))]">
+            <div className="sm:col-span-2 lg:col-span-1">
               <a
-                href="#top"
+                href="/"
                 className="inline-flex items-center gap-2.5"
                 aria-label="Luxen Digital home"
               >
-                <LuxenMark className="h-8 w-auto max-w-[200px]" />
+                <LuxenMark className="h-10 w-auto max-w-[200px]" />
               </a>
-              <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted-foreground">
-                Premium websites and AI-powered business systems for local
-                service businesses.
+              <p className="mt-6 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                Serving service businesses across the San Diego area and the rest of the United States.
               </p>
-              <a
-                href="mailto:team@luxendigital.com"
-                className="mt-5 inline-block text-sm font-medium text-foreground underline-offset-4 hover:text-accent hover:underline"
-              >
-                team@luxendigital.com
-              </a>
+
+              <ul className="mt-6 space-y-2.5">
+                <li>
+                  <a
+                    href="mailto:team@luxendigital.com"
+                    className="text-sm font-medium text-foreground transition-colors hover:text-accent"
+                  >
+                    <ScrambleText text="team@luxendigital.com" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="tel:+18582239635"
+                    className="text-sm font-medium text-foreground transition-colors hover:text-accent"
+                  >
+                    +1 858-223-9635
+                  </a>
+                </li>
+                <li className="text-sm text-muted-foreground">
+                  Serving service businesses across the San Diego area and the rest of the United States
+                </li>
+              </ul>
+
+              <SocialIcons className="mt-7" />
             </div>
 
             {cols.map((c) => (
@@ -291,14 +346,14 @@ export function Footer() {
                 <h3 className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                   {c.title}
                 </h3>
-                <ul className="mt-4 space-y-3">
+                <ul className="mt-5 space-y-3">
                   {c.links.map((l) => (
                     <li key={l.label}>
                       <a
                         href={l.href}
                         className="inline-block py-0.5 text-sm text-foreground/70 transition-colors hover:text-foreground"
                       >
-                        {l.label}
+                        <ScrambleText text={l.label} />
                       </a>
                     </li>
                   ))}
@@ -311,7 +366,7 @@ export function Footer() {
           <div
             role="tablist"
             aria-label="What we do and who we do it for"
-            className="mt-12 inline-flex items-center gap-1 rounded-full border border-border p-1"
+            className="mt-14 inline-flex items-center gap-1 rounded-full border border-border p-1"
           >
             {(Object.keys(TABS) as TabKey[]).map((key) => {
               const on = key === tab;
@@ -329,7 +384,7 @@ export function Footer() {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  {TABS[key].label}
+                  <ScrambleText text={TABS[key].label} />
                 </button>
               );
             })}
@@ -379,22 +434,60 @@ export function Footer() {
       {/* ── Sign-off ── */}
       <Wordmark />
 
+      {/* ── Sign-off. The legal row repeats here because this is where people
+           look for it, and the SMS line is the disclosure that has to be
+           visible wherever a phone number is collected. ── */}
       <div className="mx-auto max-w-7xl px-6 pb-9 pt-7 lg:px-10">
-        <div className="flex flex-col items-start justify-between gap-4 border-t border-border pt-7 sm:flex-row sm:items-center">
-          <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Luxen Digital. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            {["LinkedIn", "Instagram", "X"].map((s) => (
-              <a
-                key={s}
-                href="/contact"
-                className="py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-accent"
-              >
-                {s}
-              </a>
-            ))}
+        <div className="border-t border-border pt-7">
+          <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
+            <p className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} Luxen Digital. All rights reserved.
+            </p>
+
+            <nav aria-label="Legal">
+              <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                {LEGAL_DOCS.map((d) => (
+                  <li key={d.slug}>
+                    <a
+                      href={`/legal/${d.slug}`}
+                      className="text-xs text-muted-foreground transition-colors hover:text-accent"
+                    >
+                      {d.nav}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <a
+              href="#top"
+              className="py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-accent"
+            >
+              <ScrambleText text="Back to top" />
+            </a>
           </div>
+
+          <p className="mt-6 max-w-3xl text-[11px] leading-relaxed text-muted-foreground/70">
+            By providing a phone number you agree to receive calls and text
+            messages from Luxen Digital at that number, including messages sent
+            by automated means. Consent is not a condition of purchase. Message
+            and data rates may apply; message frequency varies. Reply STOP to
+            opt out or HELP for help. See our{" "}
+            <a
+              href="/legal/sms"
+              className="underline decoration-border underline-offset-2 transition-colors hover:text-accent"
+            >
+              SMS Terms
+            </a>{" "}
+            and{" "}
+            <a
+              href="/legal/privacy"
+              className="underline decoration-border underline-offset-2 transition-colors hover:text-accent"
+            >
+              Privacy Policy
+            </a>
+            .
+          </p>
         </div>
       </div>
     </footer>

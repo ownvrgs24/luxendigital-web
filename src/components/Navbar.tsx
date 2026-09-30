@@ -26,10 +26,19 @@ const MOBILE = "(max-width: 860px)";
 
 const NAV_LINKS = [
   { label: "Pricing", href: "/pricing" },
-  { label: "Testimonials", href: "/testimonials" },
   { label: "Our Works", href: "/work" },
   { label: "About Us", href: "/why-luxen" },
 ];
+
+/** Does `href` name the page we're on? Sub-paths count, so /services/hvac
+ *  lights up the services trigger the same way /work lights up its link. */
+const matches = (pathname: string, href: string) =>
+  pathname === href || pathname.startsWith(`${href}/`);
+
+/** Routes whose first screen is dark enough for the transparent bar to sit on
+ *  top of it. Add a route here only when its hero genuinely fills the top of
+ *  the viewport — otherwise the light nav text lands on a white page. */
+const DARK_HERO_ROUTES = new Set(["/", "/why-luxen"]);
 
 const isMobile = () => window.matchMedia(MOBILE).matches;
 const isReduced = () =>
@@ -82,14 +91,25 @@ export function Navbar() {
   const { open: openBooking } = useBooking();
 
   const [scrolled, setScrolled] = useState(false);
-  // The undocked bar is transparent with light text — it only reads against
-  // the home page's dark hero. Every other route starts on a light surface,
-  // so the pill is docked from the first pixel there.
-  const onDarkHero = useLocation().pathname === "/";
+  // The undocked bar is transparent with light text, so it only reads against
+  // a dark opening. Routes that start on a light surface get the docked pill
+  // from the first pixel instead.
+  const { pathname } = useLocation();
+  const onDarkHero = DARK_HERO_ROUTES.has(pathname);
+  const servicesActive = matches(pathname, "/services");
+  /** The service page we're actually on, if any. Module-level SERVICES means
+   *  this is a stable reference for as long as the route doesn't change. */
+  const currentService = SERVICES.find(
+    (s) => pathname === `/services/${s.slug}`,
+  );
   const docked = scrolled || !onDarkHero;
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState<Service>(SERVICES[0]);
-  const [copy, setCopy] = useState<Service>(SERVICES[0]);
+  const [active, setActive] = useState<Service>(
+    () => currentService ?? SERVICES[0],
+  );
+  const [copy, setCopy] = useState<Service>(
+    () => currentService ?? SERVICES[0],
+  );
   const [openAcc, setOpenAcc] = useState<string | null>(null);
 
   const headerRef = useRef<HTMLElement>(null);
@@ -123,38 +143,35 @@ export function Navbar() {
   }, []);
 
   // ── active row + copy swap ─────────────────────────────────────────
-  const activate = useCallback(
-    (svc: Service, instant?: boolean) => {
-      setActive(svc);
-      const el = copyRef.current;
-      if (!el || instant || isReduced()) {
-        setCopy(svc);
-        return;
-      }
-      copyAnim.current?.cancel();
-      const out = el.animate(
-        [
-          { opacity: 1, transform: "translateY(0)" },
-          { opacity: 0, transform: "translateY(-6px)" },
-        ],
-        { duration: 110, easing: "ease-in", fill: "forwards" },
-      );
-      out.onfinish = () => {
-        setCopy(svc);
-        requestAnimationFrame(() => {
-          out.cancel();
-          copyAnim.current = el.animate(
-            [
-              { opacity: 0, transform: "translateY(8px)" },
-              { opacity: 1, transform: "translateY(0)" },
-            ],
-            { duration: 300, easing: EASE },
-          );
-        });
-      };
-    },
-    [],
-  );
+  const activate = useCallback((svc: Service, instant?: boolean) => {
+    setActive(svc);
+    const el = copyRef.current;
+    if (!el || instant || isReduced()) {
+      setCopy(svc);
+      return;
+    }
+    copyAnim.current?.cancel();
+    const out = el.animate(
+      [
+        { opacity: 1, transform: "translateY(0)" },
+        { opacity: 0, transform: "translateY(-6px)" },
+      ],
+      { duration: 110, easing: "ease-in", fill: "forwards" },
+    );
+    out.onfinish = () => {
+      setCopy(svc);
+      requestAnimationFrame(() => {
+        out.cancel();
+        copyAnim.current = el.animate(
+          [
+            { opacity: 0, transform: "translateY(8px)" },
+            { opacity: 1, transform: "translateY(0)" },
+          ],
+          { duration: 300, easing: EASE },
+        );
+      });
+    };
+  }, []);
 
   useEffect(() => {
     if (open) requestAnimationFrame(() => moveGlide());
@@ -170,7 +187,9 @@ export function Navbar() {
         if (v) {
           openedAt.current = performance.now();
           if (!isMobile()) {
-            activate(SERVICES[0], true);
+            // Open on the service you're reading, not on whatever happens to
+            // be first in the list.
+            activate(currentService ?? SERVICES[0], true);
             requestAnimationFrame(() => moveGlide(true));
           }
         } else {
@@ -179,7 +198,7 @@ export function Navbar() {
         return v;
       });
     },
-    [activate, moveGlide],
+    [activate, moveGlide, currentService],
   );
 
   // body scroll lock while the mobile sheet is up
@@ -300,7 +319,8 @@ export function Navbar() {
           >
             <button
               ref={triggerRef}
-              className="nav__item"
+              className={`nav__item${servicesActive ? " is-current" : ""}`}
+              aria-current={servicesActive ? "page" : undefined}
               aria-expanded={open}
               aria-controls="lxn-mega"
               onClick={() => {
@@ -321,13 +341,21 @@ export function Navbar() {
               <Chevron className="chev" />
             </button>
           </li>
-          {NAV_LINKS.map((l) => (
-            <li key={l.href}>
-              <a className="nav__item" href={l.href} onPointerEnter={awayEnter}>
-                {l.label}
-              </a>
-            </li>
-          ))}
+          {NAV_LINKS.map((l) => {
+            const current = matches(pathname, l.href);
+            return (
+              <li key={l.href}>
+                <a
+                  className={`nav__item${current ? " is-current" : ""}`}
+                  aria-current={current ? "page" : undefined}
+                  href={l.href}
+                  onPointerEnter={awayEnter}
+                >
+                  {l.label}
+                </a>
+              </li>
+            );
+          })}
         </ul>
 
         <button
@@ -379,7 +407,14 @@ export function Navbar() {
                           style={{ "--i": row } as CSSProperties}
                         >
                           <a
-                            className={`svc${active.id === s.id ? " is-active" : ""}`}
+                            // is-active follows the pointer; is-current marks
+                            // the page you're on and outlives the hover.
+                            className={`svc${active.id === s.id ? " is-active" : ""}${
+                              currentService?.id === s.id ? " is-current" : ""
+                            }`}
+                            aria-current={
+                              currentService?.id === s.id ? "page" : undefined
+                            }
                             href={`/services/${s.slug}`}
                             aria-expanded={accOpen}
                             onPointerEnter={(e) => {
@@ -423,7 +458,10 @@ export function Navbar() {
               ))}
             </div>
 
-            <aside className="stage-home in" style={{ "--i": 2 } as CSSProperties}>
+            <aside
+              className="stage-home in"
+              style={{ "--i": 2 } as CSSProperties}
+            >
               <Stage
                 scene={active.id}
                 copy={copy}
@@ -441,11 +479,20 @@ export function Navbar() {
           </div>
 
           <nav className="mega__more" aria-label="More">
-            {NAV_LINKS.map((l) => (
-              <a key={l.href} href={l.href} onClick={closeAndGo}>
-                {l.label}
-              </a>
-            ))}
+            {NAV_LINKS.map((l) => {
+              const current = matches(pathname, l.href);
+              return (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className={current ? "is-current" : undefined}
+                  aria-current={current ? "page" : undefined}
+                  onClick={closeAndGo}
+                >
+                  {l.label}
+                </a>
+              );
+            })}
             <button
               className="btn btn--amber"
               onClick={() => {
