@@ -312,10 +312,6 @@ export function Footer() {
               >
                 <LuxenMark className="h-10 w-auto max-w-[200px]" />
               </a>
-              <p className="mt-6 max-w-xs text-sm leading-relaxed text-muted-foreground">
-                Serving service businesses across the San Diego area and the rest of the United States.
-              </p>
-
               <ul className="mt-6 space-y-2.5">
                 <li>
                   <a
@@ -334,7 +330,8 @@ export function Footer() {
                   </a>
                 </li>
                 <li className="text-sm text-muted-foreground">
-                  Serving service businesses across the San Diego area and the rest of the United States
+                  Serving service businesses across the San Diego area and the
+                  rest of the United States
                 </li>
               </ul>
 
@@ -409,7 +406,10 @@ export function Footer() {
               aria-hidden={copy === 1 || undefined}
               className="flex shrink-0 items-center"
             >
-              {active.items.map((item) => (
+              {/* `active` is a union of the two tab objects, so TypeScript
+                  can't infer the element type of the union of their `items`
+                  tuples on its own. */}
+              {active.items.map((item: string) => (
                 <li key={item} className="flex items-center">
                   <a
                     href={active.href}
