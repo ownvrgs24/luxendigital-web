@@ -162,20 +162,22 @@ body.menu-open {
 }
 
 /* You-are-here. The amber wash alone is easy to mistake for a hover state,
-   so the rule underneath is what actually carries the meaning — it is the
-   one thing on the bar that hovering another link never produces. */
+   so the dot underneath is what actually carries the meaning — it is the
+   one thing on the bar that hovering another link never produces. It matches
+   the dot the mobile sheet and the services list already use, so the marker
+   is the same shape everywhere. */
 .lxn .nav__item.is-current {
   color: var(--text);
   background: rgba(244, 185, 44, 0.12);
 }
-.lxn .nav__item.is-current::after {
+/* The item is a flex row with a 6px gap, so the dot is simply its first
+   child and the spacing comes for free. */
+.lxn .nav__item.is-current::before {
   content: "";
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 5px;
-  height: 2px;
-  border-radius: 2px;
+  flex: none;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
   background: var(--amber);
 }
 @media (prefers-contrast: more), (forced-colors: active) {
