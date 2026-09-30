@@ -931,6 +931,54 @@ body.menu-open {
   padding-right: 2px;
   border-right: 1.5px solid var(--amber);
 }
+.lxn .serp__ai {
+  padding: 10px 12px;
+  display: grid;
+  gap: 5px;
+  opacity: 0;
+}
+.lxn .serp__ai-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+.lxn .serp__ai-tag svg {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  fill: currentColor;
+  stroke: none;
+}
+.lxn .serp__ai p {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--mute);
+}
+.lxn .serp__ai b {
+  font-weight: 600;
+  color: var(--amber);
+}
+.lxn .scene.is-on .serp__ai {
+  animation: lxn-g-ai 4.6s var(--ease) infinite;
+}
+@keyframes lxn-g-ai {
+  0%,
+  36% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  50%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
 .lxn .serp__list {
   list-style: none;
   margin: 0;

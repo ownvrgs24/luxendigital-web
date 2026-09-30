@@ -47,6 +47,18 @@ export function Scenes({ activeId }: { activeId: string }) {
             </svg>
             <span className="type">roof repair near me</span>
           </div>
+          <div className="serp__ai card">
+            <span className="serp__ai-tag">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5z" />
+              </svg>
+              AI answer
+            </span>
+            <p>
+              Closest match is <b>Your business</b> — 4.9 stars, open now,
+              and they cover your area.
+            </p>
+          </div>
           <ol className="serp__list">
             <li className="r r--you card">
               <b>Your business</b>
@@ -55,10 +67,6 @@ export function Scenes({ activeId }: { activeId: string }) {
             <li className="r r--other card">
               <b>Metro Roofing Co.</b>
               <small>3.8 stars</small>
-            </li>
-            <li className="r r--other card">
-              <b>A1 Home Pros</b>
-              <small>4.1 stars</small>
             </li>
           </ol>
         </div>

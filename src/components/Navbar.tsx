@@ -6,6 +6,7 @@ import {
   type CSSProperties,
   type PointerEvent as ReactPointerEvent,
 } from "react";
+import { useLocation } from "react-router-dom";
 import { useBooking } from "@/components/BookingModal";
 import {
   SERVICES,
@@ -69,7 +70,7 @@ function Stage({
         <p className="stage__group">{copy.group}</p>
         <h4 className="stage__title">{copy.title}</h4>
         <p className="stage__desc">{copy.desc}</p>
-        <a className="link" href="#features" onClick={onLink}>
+        <a className="link" href={`/services/${copy.slug}`} onClick={onLink}>
           How it works
         </a>
       </div>
@@ -81,6 +82,11 @@ export function Navbar() {
   const { open: openBooking } = useBooking();
 
   const [scrolled, setScrolled] = useState(false);
+  // The undocked bar is transparent with light text — it only reads against
+  // the home page's dark hero. Every other route starts on a light surface,
+  // so the pill is docked from the first pixel there.
+  const onDarkHero = useLocation().pathname === "/";
+  const docked = scrolled || !onDarkHero;
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<Service>(SERVICES[0]);
   const [copy, setCopy] = useState<Service>(SERVICES[0]);
@@ -278,7 +284,7 @@ export function Navbar() {
   return (
     <header
       ref={headerRef}
-      className={`lxn nav${scrolled ? " is-scrolled" : ""}${open ? " is-open" : ""}`}
+      className={`lxn nav${docked ? " is-scrolled" : ""}${open ? " is-open" : ""}`}
     >
       <div className="nav__bar">
         <a className="logo" href="/" aria-label="Luxen Digital home">
@@ -374,7 +380,7 @@ export function Navbar() {
                         >
                           <a
                             className={`svc${active.id === s.id ? " is-active" : ""}`}
-                            href="#features"
+                            href={`/services/${s.slug}`}
                             aria-expanded={accOpen}
                             onPointerEnter={(e) => {
                               if (desktopMouse(e)) activate(s);
