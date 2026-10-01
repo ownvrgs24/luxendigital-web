@@ -1,0 +1,34 @@
+# Luxen Digital
+
+> Luxen Digital builds premium websites and AI-powered business systems for local service businesses — a high-converting website, CRM, automated follow-up, reviews, and AI in one system that helps a business capture and convert more leads. No long-term contracts.
+
+Plans start at $99/month. Contact: team@luxendigital.com · +1 (858) 223-9635.
+
+## Main pages
+
+- [Home](https://luxendigital.com/): What Luxen does and who it is for
+- [Pricing](https://luxendigital.com/pricing): Plans (Essential from $99, Growth from $299) and what each includes
+- [Our Work](https://luxendigital.com/work): Websites and systems built for clients
+- [About Us](https://luxendigital.com/why-luxen): Why Luxen, and how we work
+- [Testimonials](https://luxendigital.com/testimonials): What clients say
+- [FAQ](https://luxendigital.com/faq): Common questions about plans, setup, and contracts
+- [Contact](https://luxendigital.com/contact): Book a call or get in touch
+
+## Services
+
+- [Lead-Generating Website](https://luxendigital.com/services/lead-generating-website): A custom, fast, conversion-focused website for service businesses
+- [Get Found in Search and AI](https://luxendigital.com/services/get-found-in-search-and-ai): Local search and AI visibility — rank in Google map results and get named by ChatGPT or Gemini
+- [Stay in Touch](https://luxendigital.com/services/stay-in-touch): Seasonal reminders and offers that bring past customers back
+- [Missed Call Text Back](https://luxendigital.com/services/missed-call-text-back): Every missed call gets an instant text back
+- [All-in-One Inbox](https://luxendigital.com/services/all-in-one-inbox): Texts, emails, calls, and social messages in one shared inbox
+- [Business Phone](https://luxendigital.com/services/business-phone): A dedicated business number that rings the phone you already carry
+- [Automatic Follow-Up](https://luxendigital.com/services/automatic-follow-up): Timed text and email follow-up on every lead and quote until they book
+- [More 5-Star Reviews](https://luxendigital.com/services/more-5-star-reviews): Automatic review requests at the moment customers are happiest
+
+## Optional
+
+- [Privacy Policy](https://luxendigital.com/legal/privacy)
+- [Terms of Service](https://luxendigital.com/legal/terms)
+- [SMS & Messaging Terms](https://luxendigital.com/legal/sms)
+- [Accessibility](https://luxendigital.com/legal/accessibility)
+- [Sitemap](https://luxendigital.com/sitemap.xml)

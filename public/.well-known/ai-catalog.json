@@ -1,0 +1,28 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Luxen Digital",
+    "documentationUrl": "https://luxendigital.com/llms.txt"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:luxendigital.com:site:llms-txt",
+      "displayName": "Luxen Digital — site guide for AI agents",
+      "description": "Markdown overview of Luxen Digital's services, pricing, and pages, following the llms.txt convention.",
+      "type": "text/markdown",
+      "url": "https://luxendigital.com/llms.txt",
+      "representativeQueries": [
+        "Who builds websites and AI follow-up systems for local service businesses?",
+        "How much does Luxen Digital cost?",
+        "What services does Luxen Digital offer?"
+      ],
+      "tags": [
+        "web design",
+        "crm",
+        "ai automation",
+        "local seo",
+        "reviews"
+      ]
+    }
+  ]
+}
