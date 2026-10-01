@@ -1,42 +1,77 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useBooking } from "@/components/BookingModal";
-import { useRef } from "react";
-import RibbonGlow from "@/components/originkit/ui/ribbon-glow-custom-style";
+import { useEffect, useRef, useState } from "react";
 import { RollLabel } from "@/components/motion/RollLabel";
 
 const ease = [0.22, 1, 0.36, 1] as const;
+
+const HERO_VIDEO =
+  "https://assets.cdn.filesafe.space/myHH3DWgv1jOQx1drQO9/media/6abd8084f88ee1436cc5cc7c.mp4";
+
+/**
+ * The background video is ~3 MB, so its source is only attached once the page
+ * has finished loading — the headline paints first and the video fades in
+ * behind it. Skipped for reduced motion and data-saver connections.
+ */
+function useDeferredVideoSrc(enabled: boolean) {
+  const [src, setSrc] = useState<string | null>(null);
+  useEffect(() => {
+    if (!enabled) return;
+    const conn = (
+      navigator as Navigator & { connection?: { saveData?: boolean } }
+    ).connection;
+    if (conn?.saveData) return;
+    const attach = () => setSrc(HERO_VIDEO);
+    if (document.readyState === "complete") {
+      attach();
+      return;
+    }
+    window.addEventListener("load", attach, { once: true });
+    return () => window.removeEventListener("load", attach);
+  }, [enabled]);
+  return src;
+}
 
 export function Hero() {
   const { open } = useBooking();
   const reduce = useReducedMotion();
   const containerRef = useRef<HTMLElement>(null);
+  const videoSrc = useDeferredVideoSrc(!reduce);
+  const [videoReady, setVideoReady] = useState(false);
 
   return (
     <section
       id="top"
       ref={containerRef}
-      // bg-foreground, not bg-background: the hero only looked black because
-      // the WebGL ribbon paints over it. With a white declared background and
-      // near-white text, a machine without WebGL rendered white on white.
+      // bg-foreground, not bg-background: the hero only looks black because
+      // the video layer paints over it. With a white declared background and
+      // near-white text, a failed video would render white on white.
       className="relative min-h-screen overflow-hidden bg-foreground text-[#FAFAFA] flex items-center pt-28 pb-20 lg:pt-32 lg:pb-24"
     >
-      {/* Ribbon Glow — deep black-dominant cinematic light field */}
-      <div className="absolute inset-0 z-[1] pointer-events-auto">
-        <RibbonGlow
-          background="#050507"
-          color1="#3A2E12"
-          color2="#241B08"
-          speed={38}
-          size={120}
-          angle={-180}
-          hover={70}
-          reach={220}
-          style={{ minWidth: 0, minHeight: 0, width: "100%", height: "100%" }}
-        />
-        {/* Black-dominant scrims for depth + readability */}
+      {/* Background video — kept faint under the scrims so it reads as
+          texture behind the copy, not competition for it. */}
+      <div className="absolute inset-0 z-[1] bg-[#050507]">
+        {videoSrc && (
+          <video
+            src={videoSrc}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            tabIndex={-1}
+            onPlaying={() => setVideoReady(true)}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${
+              videoReady ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        )}
+        {/* Scrims for readability: an overall dim, heavier on the left where
+            the headline sits, and a fade into the next section. */}
         <div className="absolute inset-0 bg-black/55 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10 pointer-events-none" />
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/90 to-transparent pointer-events-none" />
       </div>
 
@@ -49,7 +84,7 @@ export function Hero() {
           className="inline-flex items-center gap-2"
         >
           <span className="text-xs sm:text-sm font-semibold tracking-[0.28em] text-accent uppercase">
-            REAL TALK. NO CONTRACT. NO BS.
+            WEB DESIGN AND MARKETING SYSTEM
           </span>
         </motion.div>
 
