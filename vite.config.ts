@@ -13,6 +13,11 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
+  build: {
+    // Lighthouse flags large first-party bundles without maps; they also make
+    // production errors readable.
+    sourcemap: true,
+  },
   plugins: [
     react(),
     mode === "development" && componentTagger({ tailwindConfig: true }),

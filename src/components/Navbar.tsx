@@ -307,7 +307,14 @@ export function Navbar() {
     >
       <div className="nav__bar">
         <a className="logo" href="/" aria-label="Luxen Digital home">
-          <img className="logo__mark" src={LOGO_URL} alt="" />
+          <img
+            className="logo__mark"
+            src={LOGO_URL}
+            alt=""
+            width={1254}
+            height={1254}
+            decoding="async"
+          />
           Luxen Digital
         </a>
 

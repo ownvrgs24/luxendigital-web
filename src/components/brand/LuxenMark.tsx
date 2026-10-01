@@ -16,8 +16,11 @@ export function LuxenMark({
     <img
       src={LUXEN_LOGO_URL}
       alt="Luxen Digital"
+      width={1254}
+      height={1254}
       className={`object-contain select-none ${className}`}
-      loading="eager"
+      loading="lazy"
+      decoding="async"
     />
   );
 }
@@ -45,6 +48,9 @@ export function LuxenWordmark({ className = "" }: { className?: string }) {
       <img
         src={LUXEN_LOGO_URL}
         alt="Luxen Digital"
+        width={1254}
+        height={1254}
+        decoding="async"
         className="h-8 md:h-9 w-auto object-contain select-none"
       />
       <motion.span

@@ -422,6 +422,16 @@ function __OriginkitBase_RibbonGlow(props: RibbonGlowProps) {
     let last = -1;
     let clock = 0;
 
+    // Canvas size is cached from a ResizeObserver: reading clientWidth inside
+    // the frame loop forces a synchronous layout every frame.
+    let cw = canvas.clientWidth || 1200;
+    let ch = canvas.clientHeight || 800;
+    const sizer = new ResizeObserver(([entry]) => {
+      cw = entry.contentRect.width || 1200;
+      ch = entry.contentRect.height || 800;
+    });
+    sizer.observe(canvas);
+
     const render = (now: number) => {
       raf = requestAnimationFrame(render);
       const dt = last < 0 ? 0 : clampN((now - last) / 1000, 0, 0.05);
@@ -430,8 +440,6 @@ function __OriginkitBase_RibbonGlow(props: RibbonGlowProps) {
       clock = (clock + dt * v.speed) % 3600;
 
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
-      const cw = canvas.clientWidth || 1200;
-      const ch = canvas.clientHeight || 800;
       const bw = Math.max(1, Math.round(cw * dpr));
       const bh = Math.max(1, Math.round(ch * dpr));
       if (canvas.width !== bw || canvas.height !== bh) {
@@ -495,9 +503,20 @@ function __OriginkitBase_RibbonGlow(props: RibbonGlowProps) {
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
-    raf = requestAnimationFrame(render);
+    // Only animate while on screen — scrolled past the hero, the loop would
+    // otherwise keep the GPU and main thread busy for nothing.
+    const visibility = new IntersectionObserver(([entry]) => {
+      cancelAnimationFrame(raf);
+      if (entry.isIntersecting) {
+        last = -1;
+        raf = requestAnimationFrame(render);
+      }
+    });
+    visibility.observe(root);
     return () => {
       cancelAnimationFrame(raf);
+      visibility.disconnect();
+      sizer.disconnect();
       pointer.dispose();
       target.dispose();
       gl.deleteVertexArray(vao);

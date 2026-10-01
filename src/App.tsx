@@ -1,48 +1,42 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { BookingProvider } from "@/components/BookingModal";
+import { lazy, Suspense } from "react";
 import Index from "./pages/Index";
-import Contact from "./pages/Contact";
-import FaqPage from "./pages/Faq";
-import WhyLuxenPage from "./pages/WhyLuxen";
-import PricingPage from "./pages/Pricing";
-import TestimonialsPage from "./pages/Testimonials";
-import WorkPage from "./pages/Work";
-import ServicePage from "./pages/Service";
-import LegalPage from "./pages/Legal";
-import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// Every route but the homepage is split into its own chunk, so the first
+// visit only downloads and parses the code for the page it lands on.
+const Contact = lazy(() => import("./pages/Contact"));
+const FaqPage = lazy(() => import("./pages/Faq"));
+const WhyLuxenPage = lazy(() => import("./pages/WhyLuxen"));
+const PricingPage = lazy(() => import("./pages/Pricing"));
+const TestimonialsPage = lazy(() => import("./pages/Testimonials"));
+const WorkPage = lazy(() => import("./pages/Work"));
+const ServicePage = lazy(() => import("./pages/Service"));
+const LegalPage = lazy(() => import("./pages/Legal"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = () => (
   <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BookingProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/faq" element={<FaqPage />} />
-              <Route path="/why-luxen" element={<WhyLuxenPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/testimonials" element={<TestimonialsPage />} />
-              <Route path="/work" element={<WorkPage />} />
-              <Route path="/services/:slug" element={<ServicePage />} />
-              <Route path="/legal/:slug" element={<LegalPage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </BookingProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <BookingProvider>
+      <BrowserRouter>
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/faq" element={<FaqPage />} />
+            <Route path="/why-luxen" element={<WhyLuxenPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/testimonials" element={<TestimonialsPage />} />
+            <Route path="/work" element={<WorkPage />} />
+            <Route path="/services/:slug" element={<ServicePage />} />
+            <Route path="/legal/:slug" element={<LegalPage />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </BookingProvider>
   </HelmetProvider>
 );
 

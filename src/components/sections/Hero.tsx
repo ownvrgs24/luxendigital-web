@@ -54,9 +54,11 @@ export function Hero() {
         </motion.div>
 
         {/* Main Headline */}
+        {/* Transform-only entrance: the headline is the LCP element, and
+            starting it at opacity 0 holds LCP back until the animation ends. */}
         <motion.h1
-          initial={{ opacity: 0, y: 22 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={reduce ? false : { y: 22 }}
+          animate={{ y: 0 }}
           transition={{ duration: 0.9, delay: 0.1, ease }}
           className="mt-6 max-w-4xl font-display text-[2.75rem] sm:text-6xl lg:text-[4.75rem] font-black leading-[1.03] tracking-[-0.03em] text-white"
         >
@@ -66,8 +68,8 @@ export function Hero() {
 
         {/* Subheadline copy */}
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={reduce ? false : { y: 18 }}
+          animate={{ y: 0 }}
           transition={{ duration: 0.9, delay: 0.2, ease }}
           className="mt-6 max-w-lg text-base sm:text-lg leading-relaxed text-[#E4E4E7]"
         >

@@ -185,11 +185,17 @@ export function WhoWeHelp() {
 
           {/* Col 2 — timeline + CTA (text alone tells the full story) */}
           <div className="flex w-full max-w-[340px] flex-col items-center justify-center min-[960px]:max-w-none min-[960px]:items-start">
-            <ol className="relative w-full">
+            {/* The rules live in a wrapper, not the <ol>: a list may only
+                contain <li> children. */}
+            <div className="relative w-full">
               {/* Vertical rule track */}
-              <div className="absolute left-[5px] top-1 bottom-1 w-px bg-border" />
+              <div
+                aria-hidden="true"
+                className="absolute left-[5px] top-1 bottom-1 w-px bg-border"
+              />
               {/* Gold fill — scaleY, not height */}
               <div
+                aria-hidden="true"
                 className="absolute left-[5px] top-1 w-px bg-accent"
                 style={{
                   height: "calc(100% - 8px)",
@@ -199,45 +205,47 @@ export function WhoWeHelp() {
                 }}
               />
 
-              {TIMELINE.map((item, i) => {
-                const completed = i < activeStep;
-                const active = i === activeStep;
-                const upcoming = i > activeStep;
-                return (
-                  <li key={i} className="relative pl-7 pb-7 last:pb-0">
-                    {/* Marker */}
-                    <span
-                      className={`absolute left-0 top-1 h-[11px] w-[11px] rounded-full ring-2 ring-background transition-all duration-300 ${
-                        completed || active
-                          ? "bg-accent"
-                          : "bg-transparent border border-muted-foreground/40"
-                      }`}
-                    />
-                    <p className="font-mono text-[11px] font-medium tracking-[0.15em] text-muted-foreground">
-                      {item.time}
-                    </p>
-                    <p
-                      className={`mt-0.5 font-display text-base font-bold tracking-tight transition-colors duration-300 sm:text-lg ${
-                        upcoming
-                          ? "text-muted-foreground/50"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {item.title}
-                    </p>
-                    <p
-                      className={`mt-0.5 text-sm leading-relaxed transition-colors duration-300 ${
-                        upcoming
-                          ? "text-muted-foreground/40"
-                          : "text-muted-foreground"
-                      }`}
-                    >
-                      {item.desc}
-                    </p>
-                  </li>
-                );
-              })}
-            </ol>
+              <ol className="relative w-full">
+                {TIMELINE.map((item, i) => {
+                  const completed = i < activeStep;
+                  const active = i === activeStep;
+                  const upcoming = i > activeStep;
+                  return (
+                    <li key={i} className="relative pl-7 pb-7 last:pb-0">
+                      {/* Marker */}
+                      <span
+                        className={`absolute left-0 top-1 h-[11px] w-[11px] rounded-full ring-2 ring-background transition-all duration-300 ${
+                          completed || active
+                            ? "bg-accent"
+                            : "bg-transparent border border-muted-foreground/40"
+                        }`}
+                      />
+                      <p className="font-mono text-[11px] font-medium tracking-[0.15em] text-muted-foreground">
+                        {item.time}
+                      </p>
+                      <p
+                        className={`mt-0.5 font-display text-base font-bold tracking-tight transition-colors duration-300 sm:text-lg ${
+                          upcoming
+                            ? "text-muted-foreground/50"
+                            : "text-foreground"
+                        }`}
+                      >
+                        {item.title}
+                      </p>
+                      <p
+                        className={`mt-0.5 text-sm leading-relaxed transition-colors duration-300 ${
+                          upcoming
+                            ? "text-muted-foreground/40"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {item.desc}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
 
             {/* CTA — solid gold, no glow, visible focus ring */}
             <div className="mt-8 flex w-full justify-center min-[960px]:justify-start">
