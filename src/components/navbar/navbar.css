@@ -134,6 +134,36 @@ body.menu-open {
 .lxn .nav__cta {
   display: none;
 }
+/* The bar's CTA is a compact version of the primary button: at full size
+   (46px in a 58px pill) it crowded the bar and its glow bled past the edge.
+   The tighter shadow keeps the gold reading as a highlight, not a halo. */
+.lxn .btn.nav__cta {
+  height: 40px;
+  padding: 0 14px 0 18px;
+  gap: 6px;
+  font-size: 14px;
+  box-shadow:
+    0 4px 14px -6px hsl(43 90% 50% / 0.6),
+    inset 0 1px 0 hsl(48 100% 80% / 0.45);
+}
+.lxn .btn.nav__cta:hover {
+  box-shadow:
+    0 6px 18px -6px hsl(43 90% 50% / 0.75),
+    inset 0 1px 0 hsl(48 100% 80% / 0.55);
+}
+.lxn .nav__cta-arrow {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.3s var(--ease);
+}
+.lxn .nav__cta:hover .nav__cta-arrow {
+  transform: translateX(2px);
+}
 
 .lxn .nav__item {
   position: relative;

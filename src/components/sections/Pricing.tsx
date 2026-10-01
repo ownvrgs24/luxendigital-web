@@ -1,9 +1,15 @@
 import { motion } from "framer-motion";
-import { Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight, Users } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { RollLabel } from "@/components/motion/RollLabel";
 import { useBooking } from "@/components/BookingModal";
-import { PLANS, PLAN_FEATURES, ASSURANCES, type Plan } from "@/content/pricing";
+import {
+  PLANS,
+  PLAN_FEATURES,
+  ASSURANCES,
+  ENTERPRISE,
+  type Plan,
+} from "@/content/pricing";
 
 export function Pricing() {
   const { open } = useBooking();
@@ -27,10 +33,14 @@ export function Pricing() {
                 plan.featured ? "order-first lg:order-none lg:-mt-6" : undefined
               }
             >
-              <PricingCard plan={plan} />
+              <PricingCard plan={plan} onSelect={open} />
             </Reveal>
           ))}
         </div>
+
+        <Reveal delay={0.15}>
+          <EnterpriseCard onContact={open} />
+        </Reveal>
 
         {/* Undecided visitors are the ones who leave. Give them a door that
             costs nothing instead of making them guess between two plans. */}
@@ -58,8 +68,14 @@ export function Pricing() {
   );
 }
 
-function PricingCard({ plan }: { plan: Plan }) {
-  const { name, badge, tagline, price, period, cta, reassurance, href } = plan;
+function PricingCard({
+  plan,
+  onSelect,
+}: {
+  plan: Plan;
+  onSelect: () => void;
+}) {
+  const { name, badge, tagline, price, period, cta, reassurance } = plan;
   const isSilver = plan.variant === "silver";
 
   const accentLine = isSilver ? "silver-gradient" : "gold-gradient";
@@ -124,16 +140,16 @@ function PricingCard({ plan }: { plan: Plan }) {
       </div>
 
       {/* The button sits under the price, not under ten feature rows. Anyone
-          who has already decided never has to scroll past the argument. */}
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+          who has already decided never has to scroll past the argument.
+          Every plan starts with the strategy-call modal, not a checkout. */}
+      <button
+        type="button"
+        onClick={onSelect}
         className={`group mt-6 inline-flex w-full items-center justify-center gap-2.5 rounded-full px-8 py-4 text-base font-bold transition-all duration-300 ${ctaClass}`}
       >
         <RollLabel>{cta}</RollLabel>
         <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-      </a>
+      </button>
       <p className="mt-3 text-center text-xs text-muted-foreground">
         {reassurance}
       </p>
@@ -166,6 +182,72 @@ function PricingCard({ plan }: { plan: Plan }) {
         </ul>
       </div>
     </motion.div>
+  );
+}
+
+/** Full-width and dark, so it reads as a step above the two self-serve
+ *  plans rather than a third column to compare against them. The button
+ *  opens the strategy-call modal: this plan is scoped on a call. */
+function EnterpriseCard({ onContact }: { onContact: () => void }) {
+  const { name, badge, tagline, price, period, cta, reassurance, features } =
+    ENTERPRISE;
+
+  return (
+    <div className="relative mx-auto mt-8 max-w-3xl overflow-hidden rounded-3xl border border-accent/30 bg-[hsl(240_10%_6%)] p-8 text-white shadow-lux sm:p-10">
+      <div className="absolute inset-x-0 top-0 h-1.5 gold-gradient" />
+      {/* soft gold light in the corner, behind the copy */}
+      <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[hsl(43_90%_55%_/_0.14)] blur-3xl" />
+
+      <div className="relative grid gap-8 md:grid-cols-[1fr_1.1fr] md:gap-10">
+        <div className="flex flex-col">
+          <span className="inline-flex w-fit items-center gap-1.5 rounded-full gold-gradient px-3 py-1 text-xs font-semibold text-[hsl(240_10%_8%)]">
+            <Users className="h-3.5 w-3.5" />
+            {badge}
+          </span>
+          <h3 className="mt-5 font-display text-2xl font-medium">{name}</h3>
+          <p className="mt-2 max-w-[36ch] text-sm leading-relaxed text-white/70">
+            {tagline}
+          </p>
+
+          <div className="mt-6">
+            <p className="font-display text-2xl font-medium gold-text">
+              {price}
+            </p>
+            <p className="mt-1 text-sm text-white/55">{period}</p>
+          </div>
+
+          <button
+            onClick={onContact}
+            className="btn-gold group mt-6 inline-flex w-full items-center justify-center gap-2.5 rounded-full px-8 py-4 text-base font-bold"
+          >
+            <RollLabel>{cta}</RollLabel>
+            <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+          </button>
+          <p className="mt-3 text-center text-xs text-white/50">
+            {reassurance}
+          </p>
+        </div>
+
+        <div className="border-t border-white/10 pt-6 md:border-l md:border-t-0 md:pl-10 md:pt-0">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/50">
+            What&rsquo;s included
+          </p>
+          <ul className="mt-4 space-y-3.5">
+            {features.map((f) => (
+              <li
+                key={f}
+                className="flex items-start gap-3 text-sm leading-relaxed text-white/85"
+              >
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full gold-gradient text-[hsl(240_10%_8%)]">
+                  <Check className="h-3 w-3" />
+                </span>
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -38,7 +38,7 @@ const PricingPage = () => {
                 "@type": "Offer",
                 name: p.name,
                 description: p.tagline,
-                url: p.href,
+                url: "https://luxendigital.com/pricing",
                 priceCurrency: "USD",
                 priceSpecification: {
                   "@type": "UnitPriceSpecification",

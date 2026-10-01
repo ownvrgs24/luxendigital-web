@@ -1,105 +1,14 @@
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, Phone, Mail, Clock } from "lucide-react";
+import { Check, Phone, Mail, Clock } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Navbar } from "@/components/Navbar";
 import { MobileCallBar } from "@/components/MobileCallBar";
 import { SEOHead } from "@/components/SEOHead";
-import { postTrackingEvent, TRACKING } from "@/lib/tracking";
-import { RollLabel } from "@/components/motion/RollLabel";
-
-// Custom field id for the "Questions" textarea (registered via CRM).
-const QUESTIONS_FIELD_ID = "SHWFEtxS1nmmx8O2Sw2l";
-
-type Errors = Partial<
-  Record<"first_name" | "last_name" | "email" | "phone", string>
->;
+import { LeadForm } from "@/components/LeadForm";
 
 export default function Contact() {
-  const [errors, setErrors] = useState<Errors>({});
-  const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
-
-  const validate = (data: FormData): Errors => {
-    const e: Errors = {};
-    const first = (data.get("first_name") as string)?.trim();
-    const last = (data.get("last_name") as string)?.trim();
-    const email = (data.get("email") as string)?.trim();
-    const phone = (data.get("phone") as string)?.trim();
-
-    if (!first) e.first_name = "Required";
-    if (!last) e.last_name = "Required";
-    if (!email) e.email = "Required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      e.email = "Enter a valid email";
-    if (!phone) e.phone = "Required";
-    else if (phone.replace(/\D/g, "").length < 10)
-      e.phone = "Enter a valid phone number";
-    return e;
-  };
-
-  const onSubmit = (ev: FormEvent<HTMLFormElement>) => {
-    ev.preventDefault();
-    const form = ev.currentTarget;
-    const data = new FormData(form);
-    const e = validate(data);
-    setErrors(e);
-    if (Object.keys(e).length) return;
-
-    setSubmitting(true);
-
-    const trackingPayload = {
-      type: "external_form_submission",
-      timestamp: Date.now(),
-      // Do not change after publish — stable slug for workflow Form filter (use formName for display renames)
-      formId: "contact-form-luxen-digital",
-      formData: {
-        first_name: (data.get("first_name") as string)?.trim(),
-        last_name: (data.get("last_name") as string)?.trim(),
-        email: (data.get("email") as string)?.trim(),
-        phone: (data.get("phone") as string)?.trim(),
-      },
-      formLabels: {
-        first_name: "First Name",
-        last_name: "Last Name",
-        email: "Email",
-        phone: "Phone",
-      },
-      url: window.location.href,
-      title: document.title,
-      path: window.location.pathname,
-      userAgent: navigator.userAgent,
-      trackingId: TRACKING.trackingId,
-      locationId: TRACKING.locationId,
-      projectId: TRACKING.projectId,
-      sessionId: crypto.randomUUID(),
-      properties: {
-        deviceType: /Mobile|Android|iPhone/i.test(navigator.userAgent)
-          ? "mobile"
-          : "desktop",
-        source: "ai_studio",
-        projectId: TRACKING.projectId,
-        formName: "Contact Form Luxen Digital",
-      },
-    };
-
-    const questions = (data.get("questions") as string)?.trim();
-
-    postTrackingEvent(trackingPayload, {
-      customFields: {
-        [QUESTIONS_FIELD_ID]: {
-          value: questions || undefined,
-          label: "Questions",
-        },
-      },
-    });
-
-    // Simulate brief submit for premium UX, then show success.
-    setTimeout(() => {
-      setSubmitting(false);
-      setDone(true);
-    }, 700);
-  };
 
   return (
     <div id="top" className="relative min-h-screen bg-background">
@@ -206,88 +115,20 @@ export default function Contact() {
                     </button>
                   </motion.div>
                 ) : (
-                  <motion.form
+                  <motion.div
                     key="form"
-                    onSubmit={onSubmit}
-                    noValidate
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="space-y-5"
                   >
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <Field
-                        name="first_name"
-                        label="First name"
-                        placeholder="Jane"
-                        error={errors.first_name}
-                        autoComplete="given-name"
-                      />
-                      <Field
-                        name="last_name"
-                        label="Last name"
-                        placeholder="Doe"
-                        error={errors.last_name}
-                        autoComplete="family-name"
-                      />
-                    </div>
-
-                    <Field
-                      name="email"
-                      type="email"
-                      label="Email"
-                      placeholder="jane@business.com"
-                      error={errors.email}
-                      autoComplete="email"
+                    <LeadForm
+                      // Do not change after publish — stable slug for workflow Form filter (use formName for display renames)
+                      formId="contact-form-luxen-digital"
+                      formName="Contact Form Luxen Digital"
+                      onSuccess={() => setDone(true)}
                     />
-
-                    <Field
-                      name="phone"
-                      type="tel"
-                      label="Phone number"
-                      placeholder="(555) 123-4567"
-                      error={errors.phone}
-                      autoComplete="tel"
-                    />
-
-                    <div>
-                      <label
-                        htmlFor="questions"
-                        className="mb-2 block text-sm font-medium text-foreground"
-                      >
-                        Questions
-                      </label>
-                      <textarea
-                        id="questions"
-                        name="questions"
-                        rows={4}
-                        placeholder="Tell us about your business, goals, or anything you'd like to discuss…"
-                        className="w-full resize-none rounded-xl border border-input bg-background/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-ring/40"
-                      />
-                    </div>
-
-                    <motion.button
-                      type="submit"
-                      disabled={submitting}
-                      whileHover={{ y: -2 }}
-                      whileTap={{ y: 0 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      className="btn-gold group flex w-full items-center justify-center gap-2.5 rounded-full px-10 py-5 text-lg font-bold disabled:opacity-70"
-                    >
-                      <RollLabel>
-                        {submitting ? "Sending…" : "Send Message"}
-                      </RollLabel>
-                      {!submitting && (
-                        <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                      )}
-                    </motion.button>
-
-                    <p className="text-center text-xs text-muted-foreground">
-                      No pressure, no obligation. Just a real conversation about
-                      your business.
-                    </p>
-                  </motion.form>
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -329,46 +170,5 @@ function ContactRow({
     </a>
   ) : (
     content
-  );
-}
-
-function Field({
-  name,
-  label,
-  type = "text",
-  placeholder,
-  error,
-  autoComplete,
-}: {
-  name: string;
-  label: string;
-  type?: string;
-  placeholder?: string;
-  error?: string;
-  autoComplete?: string;
-}) {
-  return (
-    <div>
-      <label
-        htmlFor={name}
-        className="mb-2 block text-sm font-medium text-foreground"
-      >
-        {label}
-      </label>
-      <input
-        id={name}
-        name={name}
-        type={type}
-        placeholder={placeholder}
-        autoComplete={autoComplete}
-        aria-invalid={!!error}
-        className={`w-full rounded-xl border bg-background/60 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 transition-colors focus:outline-none focus:ring-2 focus:ring-ring/40 ${
-          error
-            ? "border-destructive focus:border-destructive"
-            : "border-input focus:border-accent"
-        }`}
-      />
-      {error && <p className="mt-1.5 text-xs text-destructive">{error}</p>}
-    </div>
   );
 }

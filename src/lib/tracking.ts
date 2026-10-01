@@ -14,6 +14,30 @@ export const TRACKING = {
   projectId: "1788847884528312040",
 } as const;
 
+/** LeadConnector inbound webhook — triggers the CRM workflow for site forms. */
+export const LEAD_WEBHOOK_URL =
+  "https://services.leadconnectorhq.com/hooks/myHH3DWgv1jOQx1drQO9/webhook-trigger/3e7fbc1c-ae0b-4c8c-b847-3eb9c67ec032";
+
+/**
+ * Sends a form submission to the lead webhook as flat JSON, so each key can be
+ * mapped directly in the workflow's trigger. Unlike the tracking event this
+ * is awaited: the form only shows success once the webhook has accepted it.
+ */
+export async function postLeadWebhook(
+  fields: Record<string, string | undefined>,
+): Promise<void> {
+  const res = await fetch(LEAD_WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...fields,
+      page_url: window.location.href,
+      submitted_at: new Date().toISOString(),
+    }),
+  });
+  if (!res.ok) throw new Error(`Webhook responded ${res.status}`);
+}
+
 export const postTrackingEvent = (
   trackingPayload: Record<string, unknown> & {
     formData: Record<StandardTrackingFieldKey, unknown>;

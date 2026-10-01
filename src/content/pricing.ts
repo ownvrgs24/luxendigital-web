@@ -12,7 +12,9 @@ export type Plan = {
   /** The number behind `price`, for structured data. Keep the two in step —
    *  the pricing test asserts the display string contains it. */
   priceFrom: number;
-  /** Hosted checkout. Opens in a new tab. */
+  /** Hosted checkout. Not linked from the page any more — every plan
+   *  button opens the strategy-call modal — but kept for sending to a
+   *  client after the call. */
   href: string;
   cta: string;
   /** Sits directly under the button and answers "what am I committing to?". */
@@ -33,7 +35,7 @@ export const PLANS: Plan[] = [
     priceFrom: 99,
     href: "https://crm.luxendigital.com/payment-link/6aa4eba5ceb12d9fc1a8c7c9",
     cta: "Start with Essential",
-    reassurance: "Secure checkout · No long-term contract",
+    reassurance: "Free strategy call · No long-term contract",
     featured: false,
     variant: "silver",
   },
@@ -48,7 +50,7 @@ export const PLANS: Plan[] = [
     priceFrom: 299,
     href: "https://crm.luxendigital.com/payment-link/6aa4ebdbbfd4fe37f21d28fc",
     cta: "Build My Growth System",
-    reassurance: "Secure checkout · Cancel anytime",
+    reassurance: "Free strategy call · Cancel anytime",
     featured: true,
     variant: "gold",
   },
@@ -95,6 +97,29 @@ export const PLAN_FEATURES: PlanFeature[] = [
   },
 ];
 
+/**
+ * Enterprise sits outside the plan comparison on purpose: it is priced per
+ * business and sold on a call, not through checkout, and its rows (a whole
+ * team) would only show up as dimmed noise on the two self-serve cards.
+ */
+export const ENTERPRISE = {
+  name: "Enterprise",
+  badge: "Your own team",
+  tagline:
+    "A full team of experts working on your business — like having your own agency, without hiring one.",
+  price: "Custom pricing",
+  period: "Scoped to your business",
+  cta: "Talk to Our Team",
+  reassurance: "Free consultation · No obligation",
+  features: [
+    "Everything in Growth",
+    "A dedicated team of automation specialists, web designers, and engineers",
+    "Your own agency-style team, focused only on your business",
+    "Dedicated support with a direct line to your team",
+    "Handled end to end by experienced engineers",
+  ],
+};
+
 /** The promises that answer "what if it doesn't work out?" — every one of
  *  them is also stated in the FAQ, which is where the wording comes from. */
 export const ASSURANCES = [
@@ -120,8 +145,8 @@ export const ASSURANCES = [
 export const NEXT_STEPS = [
   {
     step: "01",
-    title: "Pick your plan",
-    body: "Checkout takes about two minutes. No contract, and you can cancel any time.",
+    title: "Book your strategy call",
+    body: "Answer four quick questions and leave your details — we'll reach out within one business day to set a time. No contract, and you can cancel any time.",
   },
   {
     step: "02",

@@ -15,7 +15,7 @@ export function PricingSteps() {
             What happens next
           </p>
           <h2 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance sm:text-4xl">
-            From checkout to booked jobs in three steps.
+            From first call to booked jobs in three steps.
           </h2>
         </Reveal>
 

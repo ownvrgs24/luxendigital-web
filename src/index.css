@@ -460,3 +460,27 @@
     cursor: pointer;
   }
 }
+
+/* The LeadConnector chat bubble floats at a z-index no page element can
+   outrank, so while the booking modal is open it is hidden outright. */
+body.booking-open chat-widget,
+body.booking-open #lc_text-widget,
+body.booking-open #lc_text-widget--btn {
+  display: none !important;
+}
+
+/* Phone field's country picker (react-phone-number-input), tuned to sit
+   inside our input chrome: flag, arrow, then a hairline before the number. */
+.lead-phone {
+  --PhoneInputCountryFlag-height: 1.05em;
+  --PhoneInputCountryFlag-borderColor: hsl(var(--border));
+  --PhoneInputCountrySelectArrow-color: hsl(var(--muted-foreground));
+  --PhoneInputCountrySelectArrow-opacity: 1;
+  --PhoneInput-color--focus: hsl(var(--accent));
+}
+.lead-phone .PhoneInputCountry {
+  align-self: stretch;
+  margin-right: 0;
+  padding-right: 0.75rem;
+  border-right: 1px solid hsl(var(--border));
+}
