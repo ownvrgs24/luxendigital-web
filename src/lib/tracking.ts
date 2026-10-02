@@ -15,7 +15,7 @@ export const TRACKING = {
 } as const;
 
 /** LeadConnector inbound webhook — triggers the CRM workflow for site forms. */
-export const LEAD_WEBHOOK_URL =
+const LEAD_WEBHOOK_URL =
   "https://services.leadconnectorhq.com/hooks/myHH3DWgv1jOQx1drQO9/webhook-trigger/3e7fbc1c-ae0b-4c8c-b847-3eb9c67ec032";
 
 /**

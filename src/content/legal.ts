@@ -1,3 +1,5 @@
+import { EMAIL, PHONE } from "./brand";
+
 /**
  * The legal pages, as structured content.
  *
@@ -26,8 +28,6 @@ export type LegalDoc = {
 };
 
 const COMPANY = "Luxen Digital";
-const EMAIL = "team@luxendigital.com";
-const PHONE = "+1 858-223-9635";
 const UPDATED = "2026-09-30";
 
 export const LEGAL_DOCS: LegalDoc[] = [

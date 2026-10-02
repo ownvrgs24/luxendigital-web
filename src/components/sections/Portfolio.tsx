@@ -1,6 +1,7 @@
+import { Eyebrow } from "@/components/ui/SectionHeading";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { Reveal } from "@/components/motion/Reveal";
+import { EASE, Reveal } from "@/components/motion/Reveal";
 import { useBooking } from "@/components/BookingModal";
 import { PROJECTS, BUILD_STANDARDS, type Project } from "@/content/work";
 
@@ -75,7 +76,7 @@ function ProjectCard({
               : "h-full w-full object-cover"
           }
           variants={{ hover: { scale: mirror ? 1.02 : 1.05 } }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.8, ease: EASE }}
         />
 
         <span className="absolute left-5 top-5 z-20 rounded-full bg-black/45 px-2.5 py-1 font-display text-[11px] font-semibold tracking-[0.2em] text-white/90 backdrop-blur-sm">
@@ -123,9 +124,7 @@ function Standards() {
   return (
     <Reveal delay={0.15}>
       <div className="mt-14 rounded-3xl border border-border bg-secondary/40 p-8 sm:p-10">
-        <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-          The standard
-        </p>
+        <Eyebrow>The standard</Eyebrow>
         <h2 className="mt-3 max-w-2xl font-display text-2xl font-medium tracking-tight text-balance text-foreground sm:text-3xl">
           Different businesses. The same four things, every time.
         </h2>

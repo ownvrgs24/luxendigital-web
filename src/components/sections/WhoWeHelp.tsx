@@ -1,3 +1,4 @@
+import { EASE } from "@/components/motion/Reveal";
 import { useEffect, useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, RotateCcw } from "lucide-react";
@@ -6,7 +7,6 @@ import { useInView } from "@/hooks/use-in-view";
 import { ChatPhone, type ChatMsg } from "@/components/sections/ChatPhone";
 import { RollLabel } from "@/components/motion/RollLabel";
 
-const ease = [0.22, 1, 0.36, 1] as const;
 
 // ── Chat script ────────────────────────────────────────────────────────
 // A real missed-call → booked-job conversation. Timestamps are grouped
@@ -161,7 +161,7 @@ export function WhoWeHelp() {
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.6, ease }}
+              transition={{ duration: 0.6, ease: EASE }}
               aria-hidden="true"
             >
               <ChatPhone
@@ -251,7 +251,7 @@ export function WhoWeHelp() {
             <div className="mt-8 flex w-full justify-center min-[960px]:justify-start">
               <button
                 onClick={open}
-                className="btn-gold inline-flex items-center gap-2.5 rounded-full px-7 py-3.5 text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="btn-gold px-7 py-3.5 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 <RollLabel>Book a Strategy Call</RollLabel>
                 <ArrowRight className="h-5 w-5" />

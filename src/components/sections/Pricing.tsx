@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Check, ArrowRight, Users } from "lucide-react";
-import { Reveal } from "@/components/motion/Reveal";
+import { EASE, Reveal } from "@/components/motion/Reveal";
 import { RollLabel } from "@/components/motion/RollLabel";
 import { useBooking } from "@/components/BookingModal";
 import {
@@ -95,7 +95,7 @@ function PricingCard({
   return (
     <motion.div
       whileHover={{ y: -6 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.35, ease: EASE }}
       className={`relative flex h-full flex-col overflow-hidden rounded-3xl border p-8 transition-colors duration-300 ${
         plan.featured
           ? "border-accent/50 bg-card shadow-gold"
@@ -218,7 +218,7 @@ function EnterpriseCard({ onContact }: { onContact: () => void }) {
 
           <button
             onClick={onContact}
-            className="btn-gold group mt-6 inline-flex w-full items-center justify-center gap-2.5 rounded-full px-8 py-4 text-base font-bold"
+            className="btn-gold group mt-6 w-full px-8 py-4 text-base"
           >
             <RollLabel>{cta}</RollLabel>
             <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />

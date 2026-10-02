@@ -103,3 +103,15 @@ const BY_ID: Record<string, Faq> = Object.fromEntries(
 export function faqsById(ids: readonly string[]): Faq[] {
   return ids.map((id) => BY_ID[id]).filter(Boolean);
 }
+
+/** schema.org FAQPage markup for a set of questions. */
+export function faqSchema(faqs: Faq[]) {
+  return {
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+}

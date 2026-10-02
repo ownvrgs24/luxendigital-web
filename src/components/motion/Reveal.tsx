@@ -1,16 +1,16 @@
 import { type ReactNode } from "react";
-import { motion, type Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { useInView } from "@/hooks/use-in-view";
 
-const easeLux = [0.22, 1, 0.36, 1] as const;
+/** The site's one easing curve — a fast start that settles softly. */
+export const EASE = [0.22, 1, 0.36, 1] as const;
 
 type RevealProps = {
   children: ReactNode;
   className?: string;
   delay?: number;
   y?: number;
-  once?: boolean;
-  as?: "div" | "section" | "span" | "p" | "h1" | "h2" | "h3";
+  as?: "div" | "li" | "section" | "span" | "p" | "h1" | "h2" | "h3";
 };
 
 /** Fade-up reveal on scroll into view. */
@@ -29,28 +29,9 @@ export function Reveal({
       className={className}
       initial={{ opacity: 0, y }}
       animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y }}
-      transition={{ duration: 0.9, delay, ease: easeLux }}
+      transition={{ duration: 0.9, delay, ease: EASE }}
     >
       {children}
     </MotionTag>
   );
 }
-
-/** Stagger container + item for lists/grids. */
-export const staggerContainer: Variants = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
-  },
-};
-
-export const staggerItem: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: easeLux },
-  },
-};
-
-export { easeLux };

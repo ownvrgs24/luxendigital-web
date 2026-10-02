@@ -1,10 +1,10 @@
+import { EASE } from "@/components/motion/Reveal";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useBooking } from "@/components/BookingModal";
 import { useEffect, useRef, useState } from "react";
 import { RollLabel } from "@/components/motion/RollLabel";
 
-const ease = [0.22, 1, 0.36, 1] as const;
 
 const HERO_VIDEO =
   "https://assets.cdn.filesafe.space/myHH3DWgv1jOQx1drQO9/media/6abd8084f88ee1436cc5cc7c.mp4";
@@ -80,7 +80,7 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease }}
+          transition={{ duration: 0.8, ease: EASE }}
           className="inline-flex items-center gap-2"
         >
           <span className="text-xs sm:text-sm font-semibold tracking-[0.28em] text-accent uppercase">
@@ -94,7 +94,7 @@ export function Hero() {
         <motion.h1
           initial={reduce ? false : { y: 22 }}
           animate={{ y: 0 }}
-          transition={{ duration: 0.9, delay: 0.1, ease }}
+          transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
           className="mt-6 max-w-4xl font-display text-[2.75rem] sm:text-6xl lg:text-[4.75rem] font-black leading-[1.03] tracking-[-0.03em] text-white"
         >
           Stop losing sales to a{" "}
@@ -105,7 +105,7 @@ export function Hero() {
         <motion.div
           initial={reduce ? false : { y: 18 }}
           animate={{ y: 0 }}
-          transition={{ duration: 0.9, delay: 0.2, ease }}
+          transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
           className="mt-6 max-w-lg text-base sm:text-lg leading-relaxed text-[#E4E4E7]"
         >
           <p>
@@ -119,12 +119,12 @@ export function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.3, ease }}
+          transition={{ duration: 0.9, delay: 0.3, ease: EASE }}
           className="mt-9 flex flex-wrap items-center gap-4"
         >
           <button
             onClick={open}
-            className="btn-gold group relative inline-flex items-center justify-center gap-2.5 rounded-full px-9 py-5 text-base sm:text-lg font-bold active:scale-[0.98]"
+            className="btn-gold group relative px-9 py-5 text-base sm:text-lg active:scale-[0.98]"
           >
             <RollLabel>Let&apos;s Talk</RollLabel>
             <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />

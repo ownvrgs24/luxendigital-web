@@ -14,8 +14,10 @@ import { useBooking } from "@/components/BookingModal";
 import { useInView } from "@/hooks/use-in-view";
 import { SERVICES } from "@/components/navbar/services-menu-data";
 import { LEGAL_DOCS } from "@/content/legal";
+import { EMAIL, PHONE, PHONE_HREF } from "@/content/brand";
 
-type FooterLink = { label: string; href: string };
+/** A link, or (with no href) the button that opens the booking modal. */
+type FooterLink = { label: string; href?: string };
 
 /**
  * Four columns, grouped by what a visitor is actually trying to do: find out
@@ -30,6 +32,9 @@ type FooterLink = { label: string; href: string };
  * The services column is built from SERVICES, so the footer can never offer a
  * service page that has been renamed or removed.
  */
+const LINK =
+  "inline-block py-0.5 text-left text-sm text-foreground/70 transition-colors hover:text-foreground";
+
 const cols: { title: string; links: FooterLink[] }[] = [
   {
     title: "Company",
@@ -38,7 +43,7 @@ const cols: { title: string; links: FooterLink[] }[] = [
       { label: "Our Work", href: "/work" },
       { label: "Reviews", href: "/testimonials" },
       { label: "Philosophy", href: "/#philosophy" },
-      { label: "Contact", href: "/contact" },
+      { label: "Contact", href: "/#contact" },
     ],
   },
   {
@@ -55,7 +60,7 @@ const cols: { title: string; links: FooterLink[] }[] = [
       { label: "Our Process", href: "/#journey" },
       { label: "Industries We Serve", href: "/#who-we-help" },
       { label: "FAQ", href: "/faq" },
-      { label: "Book a Strategy Call", href: "/contact" },
+      { label: "Book a Strategy Call" },
     ],
   },
   {
@@ -278,7 +283,7 @@ export function Footer() {
             <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-7">
               <button
                 onClick={open}
-                className="btn-gold inline-flex w-full items-center justify-center gap-2.5 rounded-full px-8 py-4 text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
+                className="btn-gold w-full px-8 py-4 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto"
               >
                 <RollLabel>Book a Strategy Call</RollLabel>
                 <ArrowRight className="h-5 w-5" />
@@ -286,10 +291,10 @@ export function Footer() {
               <p className="text-sm text-muted-foreground">
                 or call{" "}
                 <a
-                  href="tel:+18582239635"
+                  href={PHONE_HREF}
                   className="font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
                 >
-                  +1 858-223-9635
+                  {PHONE}
                 </a>
               </p>
             </div>
@@ -315,18 +320,18 @@ export function Footer() {
               <ul className="mt-6 space-y-2.5">
                 <li>
                   <a
-                    href="mailto:team@luxendigital.com"
+                    href={`mailto:${EMAIL}`}
                     className="text-sm font-medium text-foreground transition-colors hover:text-accent"
                   >
-                    <ScrambleText text="team@luxendigital.com" />
+                    <ScrambleText text={EMAIL} />
                   </a>
                 </li>
                 <li>
                   <a
-                    href="tel:+18582239635"
+                    href={PHONE_HREF}
                     className="text-sm font-medium text-foreground transition-colors hover:text-accent"
                   >
-                    +1 858-223-9635
+                    {PHONE}
                   </a>
                 </li>
                 <li className="text-sm text-muted-foreground">
@@ -346,12 +351,15 @@ export function Footer() {
                 <ul className="mt-5 space-y-3">
                   {c.links.map((l) => (
                     <li key={l.label}>
-                      <a
-                        href={l.href}
-                        className="inline-block py-0.5 text-sm text-foreground/70 transition-colors hover:text-foreground"
-                      >
-                        <ScrambleText text={l.label} />
-                      </a>
+                      {l.href ? (
+                        <a href={l.href} className={LINK}>
+                          <ScrambleText text={l.label} />
+                        </a>
+                      ) : (
+                        <button type="button" onClick={open} className={LINK}>
+                          <ScrambleText text={l.label} />
+                        </button>
+                      )}
                     </li>
                   ))}
                 </ul>

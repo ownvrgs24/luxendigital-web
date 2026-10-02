@@ -12,10 +12,6 @@
     --foreground: 240 10% 6%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 6%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 6%;
 
     --primary: 240 10% 6%;
     --primary-foreground: 0 0% 100%;
@@ -30,7 +26,6 @@
     --accent-foreground: 240 10% 6%;
 
     --accent-soft: 40 90% 96%;
-    --accent-glow: 45 95% 60%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -38,53 +33,8 @@
     --border: 240 14% 92%;
     --input: 240 14% 92%;
     --ring: 43 74% 50%;
-
-    --radius: 0.75rem;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 43 74% 50%;
   }
 
-  .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 10% 6%;
-    --secondary: 240 8% 12%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 8% 12%;
-    --muted-foreground: 240 6% 65%;
-    --accent: 40 90% 50%;
-    --accent-foreground: 240 10% 6%;
-    --accent-soft: 40 50% 14%;
-    --accent-glow: 45 95% 60%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 8% 16%;
-    --input: 240 8% 16%;
-    --ring: 43 74% 50%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 43 74% 50%;
-  }
-}
-
-@layer base {
   * {
     @apply border-border;
   }
@@ -109,6 +59,41 @@
   ::selection {
     background: hsl(var(--accent) / 0.25);
     color: hsl(var(--foreground));
+  }
+}
+
+@layer components {
+  /* The primary button. Layout lives here too, so call sites only add size;
+     in the components layer so any utility (flex, gap-2…) still overrides. */
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    background: linear-gradient(
+      120deg,
+      hsl(40 85% 44%) 0%,
+      hsl(45 92% 56%) 50%,
+      hsl(42 88% 50%) 100%
+    );
+    color: hsl(240 10% 8%);
+    box-shadow:
+      0 10px 35px -5px hsl(43 90% 50% / 0.55),
+      0 2px 8px -2px hsl(43 90% 50% / 0.35);
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .btn-gold:hover {
+    background: linear-gradient(
+      120deg,
+      hsl(42 90% 50%) 0%,
+      hsl(46 95% 62%) 50%,
+      hsl(44 92% 54%) 100%
+    );
+    box-shadow:
+      0 14px 45px -4px hsl(43 90% 50% / 0.7),
+      0 4px 12px -2px hsl(43 90% 50% / 0.4);
   }
 }
 
@@ -229,42 +214,10 @@
     }
   }
 
-  /* Premium gold button — token-driven, reusable everywhere */
-  .btn-gold {
-    background: linear-gradient(
-      120deg,
-      hsl(40 85% 44%) 0%,
-      hsl(45 92% 56%) 50%,
-      hsl(42 88% 50%) 100%
-    );
-    color: hsl(240 10% 8%);
-    box-shadow:
-      0 10px 35px -5px hsl(43 90% 50% / 0.55),
-      0 2px 8px -2px hsl(43 90% 50% / 0.35);
-    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .btn-gold:hover {
-    background: linear-gradient(
-      120deg,
-      hsl(42 90% 50%) 0%,
-      hsl(46 95% 62%) 50%,
-      hsl(44 92% 54%) 100%
-    );
-    box-shadow:
-      0 14px 45px -4px hsl(43 90% 50% / 0.7),
-      0 4px 12px -2px hsl(43 90% 50% / 0.4);
-  }
-
   .glass {
     background: hsl(0 0% 100% / 0.6);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
-  }
-
-  .glass-dark {
-    background: hsl(240 10% 6% / 0.55);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
   }
 
   .shadow-lux {
@@ -278,22 +231,6 @@
     box-shadow:
       0 8px 30px -8px hsl(43 90% 55% / 0.45),
       0 2px 8px -2px hsl(43 90% 55% / 0.3);
-  }
-
-  /* Silver (Essential tier) */
-  .silver-text {
-    background: linear-gradient(
-      120deg,
-      hsl(220 8% 55%) 0%,
-      hsl(220 14% 80%) 30%,
-      hsl(210 20% 96%) 50%,
-      hsl(220 12% 72%) 70%,
-      hsl(220 8% 50%) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
   }
 
   .silver-gradient {
@@ -311,37 +248,6 @@
     box-shadow:
       0 8px 30px -8px hsl(220 10% 60% / 0.35),
       0 2px 8px -2px hsl(220 10% 60% / 0.22);
-  }
-
-  /* Blue diamond (Growth + Ads tier) */
-  .diamond-text {
-    background: linear-gradient(
-      120deg,
-      hsl(222 80% 40%) 0%,
-      hsl(214 90% 58%) 35%,
-      hsl(205 95% 78%) 55%,
-      hsl(218 85% 50%) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
-
-  .diamond-gradient {
-    background: linear-gradient(
-      120deg,
-      hsl(222 80% 42%) 0%,
-      hsl(214 90% 58%) 40%,
-      hsl(205 95% 74%) 60%,
-      hsl(218 85% 48%) 100%
-    );
-  }
-
-  .shadow-diamond {
-    box-shadow:
-      0 8px 30px -8px hsl(214 90% 55% / 0.5),
-      0 2px 8px -2px hsl(214 90% 55% / 0.3);
   }
 
   /* Skeleton shimmer. A pulsing opacity reads as "something is broken";
@@ -396,69 +302,15 @@
     background-size: 22px 22px;
   }
 
-  .bg-grid {
-    background-image:
-      linear-gradient(to right, hsl(240 14% 92% / 0.6) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(240 14% 92% / 0.6) 1px, transparent 1px);
-    background-size: 64px 64px;
-  }
-
   .mask-fade-b {
     -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
     mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-  }
-
-  .mask-fade-x {
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent,
-      black 12%,
-      black 88%,
-      transparent
-    );
-    mask-image: linear-gradient(
-      to right,
-      transparent,
-      black 12%,
-      black 88%,
-      transparent
-    );
   }
 
   .will-transform {
     will-change: transform;
   }
 
-  /* Interactive Metal Rosette slider */
-  .rosette-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    outline: none;
-  }
-  .rosette-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 9999px;
-    background: hsl(var(--accent));
-    border: 2px solid hsl(var(--background));
-    box-shadow: 0 0 0 1px hsl(var(--accent) / 0.4);
-    cursor: pointer;
-    transition: transform 0.15s ease;
-  }
-  .rosette-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-  }
-  .rosette-slider::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 9999px;
-    background: hsl(var(--accent));
-    border: 2px solid hsl(var(--background));
-    box-shadow: 0 0 0 1px hsl(var(--accent) / 0.4);
-    cursor: pointer;
-  }
 }
 
 /* The LeadConnector chat bubble floats at a z-index no page element can

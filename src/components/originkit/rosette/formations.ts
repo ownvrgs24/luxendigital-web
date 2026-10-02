@@ -2,9 +2,9 @@
 
 import type { V3 } from "./geometry";
 
-export const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-export const easeIn = (t: number) => t * t * t;
-export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeIn = (t: number) => t * t * t;
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 const F_EXPAND = 0.31;
 const F_COLLAPSE = 0.29;

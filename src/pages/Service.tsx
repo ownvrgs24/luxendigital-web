@@ -1,17 +1,15 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/sections/Footer";
+import { PageLayout } from "@/components/layout/PageLayout";
 import { FinalCTA } from "@/components/sections/FinalCTA";
-import { MobileCallBar } from "@/components/MobileCallBar";
 import { Reveal } from "@/components/motion/Reveal";
 import { RollLabel } from "@/components/motion/RollLabel";
-import { SEOHead } from "@/components/SEOHead";
 import { useBooking } from "@/components/BookingModal";
 import { BY_SLUG, SERVICES, ICONS } from "@/components/navbar/services-menu-data";
 import { Scenes } from "@/components/navbar/services-menu-scenes";
 import { SERVICE_COPY } from "@/content/services";
+import { Eyebrow } from "@/components/ui/SectionHeading";
 import NotFound from "./NotFound";
 import "@/components/navbar/navbar.css";
 
@@ -42,23 +40,21 @@ const ServicePage = () => {
     .filter((s): s is (typeof SERVICES)[number] => Boolean(s));
 
   return (
-    <div id="top" className="relative min-h-screen bg-background">
-      <SEOHead
-        title={svc.title}
-        description={copy.meta}
-        canonical={`/services/${svc.slug}`}
-        schemaJson={{
+    <PageLayout
+      seo={{
+        title: svc.title,
+        description: copy.meta,
+        canonical: `/services/${svc.slug}`,
+        schemaJson: {
           "@context": "https://schema.org",
           "@type": "Service",
           name: svc.title,
           description: copy.meta,
           provider: { "@type": "Organization", name: "Luxen Digital" },
           areaServed: "United States",
-        }}
-      />
-      <Navbar />
-
-      <main>
+        },
+      }}
+    >
         {/* ── Hero ───────────────────────────────────────────────────────
             Dark band, so the page opens the way the home page does. The
             demo on the right is the same animated scene the services menu
@@ -72,9 +68,7 @@ const ServicePage = () => {
                     className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-accent [&_svg]:h-[18px] [&_svg]:w-[18px]"
                     dangerouslySetInnerHTML={{ __html: ICONS[svc.id] }}
                   />
-                  <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-                    {svc.group}
-                  </p>
+                  <Eyebrow>{svc.group}</Eyebrow>
                 </div>
 
                 <h1 className="mt-6 max-w-[18ch] font-display text-4xl leading-[1.02] tracking-tight text-balance sm:text-5xl lg:text-6xl">
@@ -88,7 +82,7 @@ const ServicePage = () => {
                 <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
                   <button
                     onClick={open}
-                    className="btn-gold inline-flex items-center gap-2.5 rounded-full px-8 py-4 text-base font-bold"
+                    className="btn-gold px-8 py-4 text-base"
                   >
                     <RollLabel>Book a Strategy Call</RollLabel>
                     <ArrowRight className="h-5 w-5" />
@@ -130,15 +124,17 @@ const ServicePage = () => {
 
             <dl className="mt-14 grid gap-x-16 sm:grid-cols-2">
               {copy.does.map((d, i) => (
-                <Reveal key={d.title} delay={i * 0.06}>
-                  <div className="border-t border-border py-7">
+                <Reveal
+                  key={d.title}
+                  delay={i * 0.06}
+                  className="border-t border-border py-7"
+                >
                     <dt className="font-display text-lg tracking-tight sm:text-xl">
                       {d.title}
                     </dt>
                     <dd className="mt-2 max-w-md text-[15px] leading-relaxed text-muted-foreground">
                       {d.body}
                     </dd>
-                  </div>
                 </Reveal>
               ))}
             </dl>
@@ -156,8 +152,12 @@ const ServicePage = () => {
 
             <ol className="mt-10">
               {copy.steps.map((s, i) => (
-                <Reveal key={s.title} delay={i * 0.06}>
-                  <li className="grid grid-cols-[3rem_1fr] gap-x-5 border-t border-border py-7 last:border-b sm:grid-cols-[4.5rem_1fr]">
+                <Reveal
+                  key={s.title}
+                  as="li"
+                  delay={i * 0.06}
+                  className="grid grid-cols-[3rem_1fr] gap-x-5 border-t border-border py-7 last:border-b sm:grid-cols-[4.5rem_1fr]"
+                >
                     <span className="font-display text-2xl leading-none tracking-tight text-muted-foreground/35 sm:text-4xl">
                       {String(i + 1).padStart(2, "0")}
                     </span>
@@ -169,7 +169,6 @@ const ServicePage = () => {
                         {s.body}
                       </p>
                     </div>
-                  </li>
                 </Reveal>
               ))}
             </ol>
@@ -230,11 +229,7 @@ const ServicePage = () => {
         </section>
 
         <FinalCTA />
-      </main>
-
-      <Footer />
-      <MobileCallBar />
-    </div>
+    </PageLayout>
   );
 };
 

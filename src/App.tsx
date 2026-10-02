@@ -6,7 +6,6 @@ import Index from "./pages/Index";
 
 // Every route but the homepage is split into its own chunk, so the first
 // visit only downloads and parses the code for the page it lands on.
-const Contact = lazy(() => import("./pages/Contact"));
 const FaqPage = lazy(() => import("./pages/Faq"));
 const WhyLuxenPage = lazy(() => import("./pages/WhyLuxen"));
 const PricingPage = lazy(() => import("./pages/Pricing"));
@@ -23,7 +22,6 @@ const App = () => (
         <Suspense fallback={<div className="min-h-screen bg-background" />}>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/contact" element={<Contact />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/why-luxen" element={<WhyLuxenPage />} />
             <Route path="/pricing" element={<PricingPage />} />

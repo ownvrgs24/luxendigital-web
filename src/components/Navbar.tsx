@@ -16,10 +16,10 @@ import {
   type Service,
 } from "@/components/navbar/services-menu-data";
 import { Scenes } from "@/components/navbar/services-menu-scenes";
+import { RollLabel } from "@/components/motion/RollLabel";
+import { LOGO_URL } from "@/content/brand";
 import "@/components/navbar/navbar.css";
 
-const LOGO_URL =
-  "https://vibe.filesafe.space/1788847884528312040/attachments/2376e462-ac48-4064-8fcb-fe02fd5c4f1f.png";
 
 const EASE = "cubic-bezier(.2,.8,.2,1)";
 const MOBILE = "(max-width: 860px)";
@@ -48,13 +48,6 @@ const Chevron = ({ className }: { className: string }) => (
   <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
     <path d="M6 9l6 6 6-6" />
   </svg>
-);
-
-const Roll = ({ label }: { label: string }) => (
-  <span className="roll">
-    <span>{label}</span>
-    <span aria-hidden="true">{label}</span>
-  </span>
 );
 
 /** Screen + copy. Rendered once for the desktop aside, and once inside
@@ -371,11 +364,11 @@ export function Navbar() {
         </ul>
 
         <button
-          className="btn btn--amber nav__cta"
+          className="btn btn-gold nav__cta"
           onClick={openBooking}
           onPointerEnter={awayEnter}
         >
-          <Roll label="Let's Talk" />
+          <RollLabel>Let's Talk</RollLabel>
           <svg className="nav__cta-arrow" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M3 8h10M9 4l4 4-4 4" />
           </svg>
@@ -509,13 +502,13 @@ export function Navbar() {
               );
             })}
             <button
-              className="btn btn--amber"
+              className="btn btn-gold"
               onClick={() => {
                 setMenu(false);
                 openBooking();
               }}
             >
-              <Roll label="Let's Talk" />
+              <RollLabel>Let's Talk</RollLabel>
             </button>
           </nav>
         </div>

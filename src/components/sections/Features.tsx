@@ -1,3 +1,4 @@
+import { EASE } from "@/components/motion/Reveal";
 import { useRef, useState } from "react";
 import {
   motion,
@@ -55,7 +56,6 @@ const N = features.length;
 const MAX_P = N - 1;
 
 const clamp = (x: number, a: number, b: number) => (x < a ? a : x > b ? b : x);
-const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Features() {
   const { open } = useBooking();
@@ -217,7 +217,7 @@ export function Features() {
                       // top of each other during a fast scroll.
                       transition={{
                         duration: reduce ? 0.1 : i === activeIndex ? 0.26 : 0.1,
-                        ease,
+                        ease: EASE,
                       }}
                       className="absolute inset-x-0"
                       style={{
@@ -271,7 +271,7 @@ export function Features() {
         </p>
         <button
           onClick={open}
-          className="btn-gold inline-flex items-center gap-2.5 rounded-full px-8 py-4 text-base font-bold"
+          className="btn-gold px-8 py-4 text-base"
         >
           <RollLabel>Book a Strategy Call</RollLabel>
           <ArrowRight className="h-5 w-5" />

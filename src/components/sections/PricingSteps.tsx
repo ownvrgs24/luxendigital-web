@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/motion/Reveal";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { NEXT_STEPS } from "@/content/pricing";
 
 /**
@@ -11,18 +12,20 @@ export function PricingSteps() {
     <section className="relative border-t border-border/60 bg-secondary/40 py-16 sm:py-20">
       <div className="mx-auto max-w-5xl px-6 lg:px-10">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-            What happens next
-          </p>
-          <h2 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance sm:text-4xl">
-            From first call to booked jobs in three steps.
-          </h2>
+          <SectionHeading
+            eyebrow="What happens next"
+            title="From first call to booked jobs in three steps."
+          />
         </Reveal>
 
         <ol className="mt-10 grid gap-5 md:grid-cols-3">
           {NEXT_STEPS.map((s, i) => (
-            <Reveal key={s.step} delay={i * 0.1}>
-              <li className="relative h-full rounded-2xl border border-border bg-background p-7 shadow-lux">
+            <Reveal
+              key={s.step}
+              as="li"
+              delay={i * 0.1}
+              className="relative h-full rounded-2xl border border-border bg-background p-7 shadow-lux"
+            >
                 <div className="mb-4 h-1.5 w-12 rounded-full gold-gradient" />
                 <p className="font-display text-sm font-medium text-accent">
                   {s.step}
@@ -33,7 +36,6 @@ export function PricingSteps() {
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {s.body}
                 </p>
-              </li>
             </Reveal>
           ))}
         </ol>

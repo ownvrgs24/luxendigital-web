@@ -9,9 +9,12 @@ import {
   type ReactNode,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { X, ArrowRight, ArrowLeft, Check, RotateCcw } from "lucide-react";
 import { RollLabel } from "@/components/motion/RollLabel";
+import { EASE as ease } from "@/components/motion/Reveal";
 import { detectCountry } from "@/lib/geo";
+import { readDraft, writeDraft } from "@/lib/draft";
+import type { LeadValues } from "@/components/LeadForm";
 
 // The form (and the phone library's numbering-plan data) is only needed at
 // the last step, so it stays out of the main bundle and loads on open.
@@ -93,6 +96,19 @@ const QUESTIONS = [
 
 type Answers = Record<string, string>;
 
+/** Where a visitor got to, saved as they go so a closed tab or modal isn't
+ *  lost. On their next open they choose to continue it or start over. */
+type Draft = { step: number; answers: Answers; contact?: LeadValues };
+const DRAFT_KEY = "booking-draft";
+
+const hasInput = (answers: Answers, contact?: LeadValues) =>
+  Object.keys(answers).length > 0 ||
+  Object.values(contact ?? {}).some((v) => v.trim());
+
+/** The primary action in the pinned footer. */
+const NEXT_BTN =
+  "btn-gold group gap-2 px-6 py-3 text-sm disabled:opacity-40 disabled:shadow-none sm:gap-2.5 sm:px-7 sm:text-base";
+
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -137,8 +153,41 @@ function BookingModalContent({ close }: { close: () => void }) {
   // 0..QUESTIONS.length-1 = questions, QUESTIONS.length = contact details
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
+  const [contact, setContact] = useState<LeadValues>();
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  // A saved draft waiting on "continue or start over". Nothing is saved
+  // until they choose, so opening the modal can't overwrite it.
+  const [resume, setResume] = useState(() => {
+    const d = readDraft<Draft>(DRAFT_KEY);
+    return d && hasInput(d.answers, d.contact) ? d : null;
+  });
+
+  useEffect(() => {
+    if (resume || done) return;
+    writeDraft(
+      DRAFT_KEY,
+      hasInput(answers, contact) ? { step, answers, contact } : null,
+    );
+  }, [resume, done, step, answers, contact]);
+
+  const continueDraft = () => {
+    if (!resume) return;
+    setStep(Math.min(resume.step, QUESTIONS.length));
+    setAnswers(resume.answers);
+    setContact(resume.contact);
+    setResume(null);
+  };
+
+  const startOver = () => {
+    writeDraft(DRAFT_KEY, null);
+    setResume(null);
+  };
+
+  const onSuccess = () => {
+    writeDraft(DRAFT_KEY, null);
+    setDone(true);
+  };
 
   // Warm both while the visitor answers the questions, so the last step
   // shows up ready, with their country already picked.
@@ -171,8 +220,6 @@ function BookingModalContent({ close }: { close: () => void }) {
       { value: answers[q.key] ?? "", label: q.label },
     ]),
   );
-
-  const ease = [0.22, 1, 0.36, 1] as const;
 
   return (
     <motion.div
@@ -219,7 +266,9 @@ function BookingModalContent({ close }: { close: () => void }) {
             <p className="mt-0.5 text-xs text-muted-foreground">
               {done
                 ? "We'll be in touch shortly."
-                : isDetails
+                : resume
+                  ? "Welcome back — you started this earlier."
+                  : isDetails
                   ? "Last step — where should we reach you?"
                   : "Quick questions first — so we come prepared."}
             </p>
@@ -234,7 +283,7 @@ function BookingModalContent({ close }: { close: () => void }) {
         </div>
 
         {/* progress bar */}
-        {!done && (
+        {!done && !resume && (
           <div className="h-1 w-full shrink-0 bg-secondary">
             <motion.div
               className="h-full gold-gradient"
@@ -263,7 +312,7 @@ function BookingModalContent({ close }: { close: () => void }) {
                   initial={{ scale: 0.6, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ duration: 0.5, ease, delay: 0.1 }}
-                  className="btn-gold flex h-16 w-16 items-center justify-center rounded-full"
+                  className="btn-gold flex h-16 w-16"
                 >
                   <Check
                     className="h-8 w-8 text-[hsl(240_10%_8%)]"
@@ -279,11 +328,18 @@ function BookingModalContent({ close }: { close: () => void }) {
                 </p>
                 <button
                   onClick={close}
-                  className="btn-gold mt-8 rounded-full px-8 py-3 text-sm font-bold"
+                  className="btn-gold mt-8 px-8 py-3 text-sm"
                 >
                   Close
                 </button>
               </motion.div>
+            ) : resume ? (
+              <ResumePrompt
+                key="resume"
+                draft={resume}
+                onContinue={continueDraft}
+                onStartOver={startOver}
+              />
             ) : (
               <motion.div
                 key={current ? current.key : "details"}
@@ -359,10 +415,10 @@ function BookingModalContent({ close }: { close: () => void }) {
                           formId="strategy-call-qualification"
                           formName="Strategy Call Booking"
                           extra={extra}
-                          onSuccess={() => setDone(true)}
+                          initial={contact}
+                          onChange={setContact}
+                          onSuccess={onSuccess}
                           onSubmittingChange={setSubmitting}
-                          hideSubmit
-                          compact
                         />
                       </div>
                     </Suspense>
@@ -376,7 +432,7 @@ function BookingModalContent({ close }: { close: () => void }) {
         {/* Pinned footer: the next action is always in reach, however long
             the step is. Padded for the iPhone home indicator. On the details
             step the button submits the form through the `form` attribute. */}
-        {!done && (
+        {!done && !resume && (
           <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border/60 bg-background px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-3.5 sm:px-7 sm:pb-5 sm:pt-4 [@media(max-height:760px)]:sm:px-6 [@media(max-height:760px)]:sm:py-3">
             <button
               onClick={back}
@@ -391,7 +447,7 @@ function BookingModalContent({ close }: { close: () => void }) {
                 type="submit"
                 form={LEAD_FORM_ID}
                 disabled={submitting}
-                className="btn-gold group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold disabled:opacity-60 sm:gap-2.5 sm:px-7 sm:text-base"
+                className={NEXT_BTN}
               >
                 <RollLabel>
                   {submitting ? "Sending…" : "Book My Call"}
@@ -404,7 +460,7 @@ function BookingModalContent({ close }: { close: () => void }) {
               <button
                 onClick={next}
                 disabled={!canProceed}
-                className="btn-gold group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold disabled:opacity-40 disabled:shadow-none sm:gap-2.5 sm:px-7 sm:text-base"
+                className={NEXT_BTN}
               >
                 <RollLabel>Continue</RollLabel>
                 <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 sm:h-5 sm:w-5" />
@@ -413,6 +469,55 @@ function BookingModalContent({ close }: { close: () => void }) {
           </div>
         )}
       </motion.div>
+    </motion.div>
+  );
+}
+
+/** Shown on open when a draft was saved: pick it back up, or clear it. */
+function ResumePrompt({
+  draft,
+  onContinue,
+  onStartOver,
+}: {
+  draft: Draft;
+  onContinue: () => void;
+  onStartOver: () => void;
+}) {
+  const name = draft.contact?.first_name.trim();
+  const answered = Object.keys(draft.answers).length;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4, ease }}
+      className="flex flex-col items-center px-6 py-12 text-center sm:py-16"
+    >
+      <h3 className="font-display text-2xl font-medium tracking-tight text-foreground">
+        {name ? `Welcome back, ${name}.` : "Welcome back."}
+      </h3>
+      <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">
+        You answered {answered} of {QUESTIONS.length} questions
+        {draft.contact ? " and started your details" : ""}. Continue where you
+        left off, or start over?
+      </p>
+      <div className="mt-8 flex w-full max-w-xs flex-col gap-3">
+        <button
+          onClick={onContinue}
+          autoFocus
+          className="btn-gold group px-8 py-3.5 text-base"
+        >
+          <RollLabel>Continue</RollLabel>
+          <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+        </button>
+        <button
+          onClick={onStartOver}
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-border px-8 py-3.5 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:text-foreground"
+        >
+          <RotateCcw className="h-4 w-4" />
+          Start over
+        </button>
+      </div>
     </motion.div>
   );
 }

@@ -28,7 +28,7 @@ const TAU = Math.PI * 2;
 //   the fully exploded rosette spans ~4.6, so one of the two is always
 //   tiny. The scale is normalised by span^FIT_FALLOFF instead — see the
 //   frame loop. At distance 32 / FOV 28° the visible frame is ~16 cells.
-export const CUBE_FIT = 5.0;
+const CUBE_FIT = 5.0;
 // FIT_FALLOFF: 1 = every formation renders at an identical size (dead);
 //   0 = no normalisation (the original problem). 0.75 keeps the silhouette
 //   stable while still letting the open formations read as bigger.
@@ -75,7 +75,7 @@ const DEF_MOTION: MotionProps = { spin: 18, travel: 100, hold: 48 };
 const DEF_CAMERA: CameraProps = { tilt: 35, sideTilt: 0 };
 const DEF_BASE_LINEAR: V3 = [0.68, 0.71, 0.75];
 
-function __OriginkitBase_MetalRosette(props: Partial<Props>) {
+function OriginkitBaseMetalRosette(props: Partial<Props>) {
   const {
     background = "#000000",
     baseColor = "#A5A5A5",
@@ -332,7 +332,7 @@ const __originkitPresetProps = {
 
 export default function MetalRosette(props: Record<string, unknown>) {
   return (
-    <__OriginkitBase_MetalRosette
+    <OriginkitBaseMetalRosette
       {...(__originkitPresetProps as Record<string, unknown>)}
       {...props}
     />

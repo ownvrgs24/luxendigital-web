@@ -1,6 +1,7 @@
+import { Eyebrow } from "@/components/ui/SectionHeading";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { Reveal } from "@/components/motion/Reveal";
+import { EASE, Reveal } from "@/components/motion/Reveal";
 import { useBooking } from "@/components/BookingModal";
 import RotatingText from "@/components/originkit/ui/text-carousel-variant-2";
 import { RollLabel } from "@/components/motion/RollLabel";
@@ -48,7 +49,6 @@ const stages = [
   },
 ];
 
-const ease = [0.22, 1, 0.36, 1] as const;
 
 export function CustomerJourney() {
   const reduce = useReducedMotion();
@@ -62,9 +62,7 @@ export function CustomerJourney() {
       <div className="mx-auto max-w-6xl px-6 lg:px-10">
         {/* Heading + rotating text */}
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-            The Customer Journey
-          </p>
+          <Eyebrow>The Customer Journey</Eyebrow>
 
           <Reveal>
             <div className="mt-5 flex flex-col items-center justify-center gap-2 sm:gap-3">
@@ -131,7 +129,7 @@ export function CustomerJourney() {
               transition={{
                 duration: 0.5,
                 delay: reduce ? 0 : (i % 3) * 0.07,
-                ease,
+                ease: EASE,
               }}
               className="group"
             >
@@ -166,7 +164,7 @@ export function CustomerJourney() {
             </p>
             <button
               onClick={() => open()}
-              className="btn-gold inline-flex items-center gap-2.5 rounded-full px-8 py-4 text-base font-bold"
+              className="btn-gold px-8 py-4 text-base"
             >
               <RollLabel>Book a Strategy Call</RollLabel>
               <ArrowRight className="h-5 w-5" />

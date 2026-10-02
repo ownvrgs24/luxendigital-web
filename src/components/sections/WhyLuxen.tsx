@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/motion/Reveal";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 
 type Reason = {
   title: string;
@@ -56,12 +57,10 @@ export function WhyLuxen() {
     >
       <div className="mx-auto max-w-6xl px-6 lg:px-10">
         <Reveal className="max-w-2xl">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-            What you get
-          </p>
-          <h2 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance sm:text-4xl lg:text-5xl">
-            Eight commitments that don&rsquo;t expire at launch.
-          </h2>
+          <SectionHeading
+            eyebrow="What you get"
+            title="Eight commitments that don’t expire at launch."
+          />
         </Reveal>
 
         <div className="mt-12 grid gap-x-14 md:grid-cols-2">

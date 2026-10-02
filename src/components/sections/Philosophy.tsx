@@ -1,6 +1,7 @@
+import { Eyebrow } from "@/components/ui/SectionHeading";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { Reveal } from "@/components/motion/Reveal";
+import { EASE, Reveal } from "@/components/motion/Reveal";
 import { RollLabel } from "@/components/motion/RollLabel";
 import { useBooking } from "@/components/BookingModal";
 
@@ -35,7 +36,6 @@ const duties = [
   },
 ];
 
-const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Philosophy() {
   const { open } = useBooking();
@@ -49,9 +49,7 @@ export function Philosophy() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-20">
           {/* ── The claim ── */}
           <Reveal>
-            <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-              Our Philosophy
-            </p>
+            <Eyebrow>Our Philosophy</Eyebrow>
             <h2 className="mt-4 font-display text-3xl font-medium leading-[1.05] tracking-tight text-balance text-background sm:text-4xl lg:text-5xl">
               Your website should be your{" "}
               <span className="gold-text">hardest-working employee</span>.
@@ -64,7 +62,7 @@ export function Philosophy() {
             </p>
             <button
               onClick={open}
-              className="btn-gold mt-8 inline-flex items-center gap-2.5 rounded-full px-8 py-4 text-base font-bold"
+              className="btn-gold mt-8 px-8 py-4 text-base"
             >
               <RollLabel>Book a Strategy Call</RollLabel>
               <ArrowRight className="h-5 w-5" />
@@ -82,7 +80,7 @@ export function Philosophy() {
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-12%" }}
-                transition={{ duration: 0.5, delay: i * 0.05, ease }}
+                transition={{ duration: 0.5, delay: i * 0.05, ease: EASE }}
                 className="group border-t border-white/10 last:border-b"
               >
                 <div className="py-5 transition-transform duration-300 ease-out group-hover:translate-x-2 motion-reduce:transition-none sm:py-6">

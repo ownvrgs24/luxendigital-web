@@ -1,3 +1,4 @@
+import { EASE } from "@/components/motion/Reveal";
 import {
   useCallback,
   useEffect,
@@ -335,7 +336,7 @@ export function VideoPlayer({
             exit={{ opacity: 0 }}
             // Trails the copy's own lift so the scrim is the last thing to go,
             // rather than the text dissolving against a bare frame.
-            transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, delay: 0.2, ease: EASE }}
             // Two scrims, not one. A single bottom-up fade darkens the whole
             // frame to make text readable; weighting it to the left instead
             // lets the copy sit on near-black while the subject stays lit.

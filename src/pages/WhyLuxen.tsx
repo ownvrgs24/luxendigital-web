@@ -1,20 +1,21 @@
 import { motion } from "framer-motion";
 import { Play, ArrowRight } from "lucide-react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/sections/Footer";
+import { PageLayout } from "@/components/layout/PageLayout";
 import { FinalCTA } from "@/components/sections/FinalCTA";
-import { MobileCallBar } from "@/components/MobileCallBar";
-import { Reveal } from "@/components/motion/Reveal";
+import { EASE, Reveal } from "@/components/motion/Reveal";
 import { RollLabel } from "@/components/motion/RollLabel";
 import { WhyLuxen } from "@/components/sections/WhyLuxen";
 import { VideoPlayer } from "@/components/media/VideoPlayer";
 import { useBooking } from "@/components/BookingModal";
-import { SEOHead } from "@/components/SEOHead";
+import { Eyebrow } from "@/components/ui/SectionHeading";
 
 const VIDEO_SRC =
   "https://assets.cdn.filesafe.space/myHH3DWgv1jOQx1drQO9/media/6abd1f5e1b644080e36e83f5.mp4";
 
-const easeLux = [0.22, 1, 0.36, 1] as const;
+const EYEBROW = "Why Luxen Digital";
+const TITLE = "A premium technology partner, not just a web design company.";
+const LEDE =
+  "Most web designers treat launch as the finish line. For us it is where the partnership begins — and this is the shortest way to show you what that looks like.";
 
 /**
  * Each line lifts and blurs away on its own beat when playback starts, and
@@ -24,7 +25,7 @@ const lift = (delay: number) => ({
   initial: { opacity: 0, y: 16, filter: "blur(6px)" },
   animate: { opacity: 1, y: 0, filter: "blur(0px)" },
   exit: { opacity: 0, y: -24, filter: "blur(6px)" },
-  transition: { duration: 0.55, delay, ease: easeLux },
+  transition: { duration: 0.55, delay, ease: EASE },
 });
 
 /** The promise in three words each, under the film. */
@@ -50,12 +51,12 @@ const WhyLuxenPage = () => {
   const { open: openBooking } = useBooking();
 
   return (
-    <div id="top" className="relative min-h-screen bg-background">
-      <SEOHead
-        title="A premium technology partner, not just a web design company."
-        description="Most web designers treat launch as the finish line. For us it is where the partnership begins — and this is the shortest way to show you what that looks like."
-        canonical="/why-luxen"
-        schemaJson={{
+    <PageLayout
+      seo={{
+        title: TITLE,
+        description: LEDE,
+        canonical: "/why-luxen",
+        schemaJson: {
           "@context": "https://schema.org",
           "@graph": [
             {
@@ -73,11 +74,9 @@ const WhyLuxenPage = () => {
               uploadDate: "2026-09-30",
             },
           ],
-        }}
-      />
-      <Navbar />
-
-      <main>
+        },
+      }}
+    >
         {/* Hero — the film is the page's opening image, and the copy sits on
             it rather than above it.
 
@@ -112,7 +111,7 @@ const WhyLuxenPage = () => {
                   onClick={play}
                   className="absolute inset-0 flex items-end justify-center pb-6 lg:hidden"
                 >
-                  <span className="btn-gold inline-flex items-center gap-2.5 rounded-full px-6 py-3 text-sm font-bold">
+                  <span className="btn-gold px-6 py-3 text-sm">
                     <Play className="h-4 w-4 fill-current" />
                     {ended ? "Watch again" : "Play the film"}
                   </span>
@@ -123,22 +122,19 @@ const WhyLuxenPage = () => {
                       {...lift(0)}
                       className="text-sm font-medium uppercase tracking-[0.25em] text-accent"
                     >
-                      Why Luxen Digital
+                      {EYEBROW}
                     </motion.p>
                     <motion.h1
                       {...lift(0.06)}
                       className="mt-4 max-w-3xl font-display text-3xl font-medium tracking-tight text-balance text-white sm:text-4xl lg:text-5xl"
                     >
-                      A premium technology partner, not just a web design
-                      company.
+                      {TITLE}
                     </motion.h1>
                     <motion.p
                       {...lift(0.12)}
                       className="mt-6 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg"
                     >
-                      Most web designers treat launch as the finish line. For us
-                      it is where the partnership begins — and this is the
-                      shortest way to show you what that looks like.
+                      {LEDE}
                     </motion.p>
 
                     <motion.div
@@ -147,7 +143,7 @@ const WhyLuxenPage = () => {
                     >
                       <button
                         onClick={play}
-                        className="btn-gold group inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-base font-bold"
+                        className="btn-gold group gap-3 px-8 py-4 text-base"
                       >
                         <Play className="h-5 w-5 fill-current" />
                         <RollLabel>
@@ -174,20 +170,16 @@ const WhyLuxenPage = () => {
         {/* Phone copy — under the frame instead of on it. The play button
             lives on the video itself, so only the call stays here. */}
         <section className="px-6 pt-10 lg:hidden">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-            Why Luxen Digital
-          </p>
+          <Eyebrow>{EYEBROW}</Eyebrow>
           <h1 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance text-foreground">
-            A premium technology partner, not just a web design company.
+            {TITLE}
           </h1>
           <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-            Most web designers treat launch as the finish line. For us it is
-            where the partnership begins — and this is the shortest way to show
-            you what that looks like.
+            {LEDE}
           </p>
           <button
             onClick={openBooking}
-            className="btn-gold group mt-8 flex h-14 w-full items-center justify-center gap-2.5 rounded-full px-8 text-base font-bold"
+            className="btn-gold group mt-8 flex h-14 w-full px-8 text-base"
           >
             <RollLabel>Book a Call</RollLabel>
             <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -219,11 +211,7 @@ const WhyLuxenPage = () => {
 
         <WhyLuxen />
         <FinalCTA />
-      </main>
-
-      <Footer />
-      <MobileCallBar />
-    </div>
+    </PageLayout>
   );
 };
 

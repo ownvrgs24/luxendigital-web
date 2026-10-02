@@ -39,7 +39,7 @@ type Social = {
  * a 32px box they read as drawing rather than as chrome, which is the only
  * way an icon this size sits quietly under a paragraph of body copy.
  */
-export const SOCIALS: Social[] = [
+const SOCIALS: Social[] = [
   { label: "LinkedIn", href: "/contact", Icon: Linkedin },
   { label: "Instagram", href: "/contact", Icon: Instagram },
   { label: "X (formerly Twitter)", href: "/contact", Icon: XLogo, solid: true },

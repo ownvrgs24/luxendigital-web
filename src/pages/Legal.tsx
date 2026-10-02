@@ -1,10 +1,8 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/sections/Footer";
-import { MobileCallBar } from "@/components/MobileCallBar";
+import { PageLayout } from "@/components/layout/PageLayout";
 import { Reveal } from "@/components/motion/Reveal";
-import { SEOHead } from "@/components/SEOHead";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LEGAL_BY_SLUG, LEGAL_DOCS } from "@/content/legal";
 import NotFound from "./NotFound";
 
@@ -26,27 +24,23 @@ const LegalPage = () => {
   });
 
   return (
-    <div id="top" className="relative min-h-screen bg-background">
-      <SEOHead
-        title={doc.title}
-        description={doc.summary}
-        canonical={`/legal/${doc.slug}`}
-      />
-      <Navbar />
-
-      <main className="pt-32">
+    <PageLayout
+      mainClassName="pt-32"
+      seo={{
+        title: doc.title,
+        description: doc.summary,
+        canonical: `/legal/${doc.slug}`,
+      }}
+    >
         <section className="relative py-10 sm:py-14">
           <div className="mx-auto max-w-3xl px-6 lg:px-10">
             <Reveal>
-              <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-                Legal
-              </p>
-              <h1 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance sm:text-4xl lg:text-5xl">
-                {doc.title}
-              </h1>
-              <p className="mt-5 text-base leading-relaxed text-muted-foreground">
-                {doc.summary}
-              </p>
+              <SectionHeading
+                as="h1"
+                eyebrow="Legal"
+                title={doc.title}
+                subtitle={doc.summary}
+              />
               <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
                 Last updated {updated}
               </p>
@@ -117,11 +111,7 @@ const LegalPage = () => {
             </Reveal>
           </div>
         </section>
-      </main>
-
-      <Footer />
-      <MobileCallBar />
-    </div>
+    </PageLayout>
   );
 };
 

@@ -1,3 +1,4 @@
+import { EASE } from "@/components/motion/Reveal";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -80,7 +81,7 @@ export function MobileCallBar() {
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.35, ease: EASE }}
           className="fixed inset-x-0 bottom-0 z-50 lg:hidden"
         >
           {/* fade backdrop above the bar */}
@@ -90,7 +91,7 @@ export function MobileCallBar() {
           <div className="border-t border-border bg-background/90 pl-4 pr-[5.25rem] pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl">
             <button
               onClick={open}
-              className="btn-gold group flex h-14 w-full items-center justify-center gap-2.5 rounded-full px-8 text-lg font-bold active:scale-[0.98]"
+              className="btn-gold group flex h-14 w-full px-8 text-lg active:scale-[0.98]"
             >
               <RollLabel>Book A Call</RollLabel>
               <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />

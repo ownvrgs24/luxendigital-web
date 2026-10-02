@@ -43,6 +43,8 @@ type Props = {
 };
 
 const ROTATION_INTERVAL_MS = 2000;
+/** Module-level so it is the same array every render (it feeds a useMemo). */
+const DEFAULT_TEXTS = ["components", "animation", "carousel"];
 
 const mapEase = (ease: TransitionValue["ease"]): string => {
   if (typeof ease !== "string") return "power2.out";
@@ -108,7 +110,7 @@ const buildElements = (text: string, splitBy: SplitBy): WordPart[] => {
   }));
 };
 
-function __OriginkitBase_RotatingText({
+function OriginkitBaseRotatingText({
   prefix = "Text",
   texts = ["components!", "interfaces!", "experiences!"],
   font = {
@@ -140,8 +142,7 @@ function __OriginkitBase_RotatingText({
     staggerChildren: 0.03,
   },
 }: Props) {
-  const safeTexts =
-    texts && texts.length > 0 ? texts : ["components", "animation", "carousel"];
+  const safeTexts = texts && texts.length > 0 ? texts : DEFAULT_TEXTS;
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const contentRef = useRef<HTMLSpanElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
@@ -416,7 +417,7 @@ const __originkitPresetProps = {
 
 export default function RotatingText(props: Record<string, unknown>) {
   return (
-    <__OriginkitBase_RotatingText
+    <OriginkitBaseRotatingText
       {...(__originkitPresetProps as Record<string, unknown>)}
       {...props}
     />

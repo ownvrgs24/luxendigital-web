@@ -1,9 +1,9 @@
+import { EASE } from "@/components/motion/Reveal";
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { PhoneMissed, Check } from "lucide-react";
 import "./who-we-help-phone.css";
 
-const ease = [0.22, 1, 0.36, 1] as const;
 
 export type ChatMsg = {
   type: "ai" | "customer" | "system";
@@ -198,7 +198,7 @@ export function ChatPhone({
                           reduce ? false : { opacity: 0, y: 8, scale: 0.96 }
                         }
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ duration: 0.28, ease }}
+                        transition={{ duration: 0.28, ease: EASE }}
                         className={`phone-bubble ${isAi ? "phone-bubble-ai" : "phone-bubble-cust"}`}
                       >
                         {msg.text}

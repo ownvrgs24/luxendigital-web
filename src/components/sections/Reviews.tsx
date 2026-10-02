@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Star, ExternalLink } from "lucide-react";
 import { Reveal } from "@/components/motion/Reveal";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { useInView } from "@/hooks/use-in-view";
 
 const SCRIPT_SRC =
@@ -71,17 +72,7 @@ export function Reviews({ heading }: { heading?: Heading }) {
       <div className="mx-auto max-w-6xl px-6 lg:px-10">
         {heading && (
           <Reveal className="mx-auto mb-10 max-w-2xl text-center">
-            <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
-              {heading.eyebrow}
-            </p>
-            <h2 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance sm:text-4xl lg:text-5xl">
-              {heading.title}
-            </h2>
-            {heading.subtitle && (
-              <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                {heading.subtitle}
-              </p>
-            )}
+            <SectionHeading center {...heading} />
           </Reveal>
         )}
 

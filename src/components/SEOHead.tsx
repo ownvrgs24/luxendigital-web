@@ -1,6 +1,7 @@
+import { LOGO_URL } from "@/content/brand";
 import { Helmet } from "react-helmet-async";
 
-type SEOHeadProps = {
+export type SEOHeadProps = {
   title: string;
   description: string;
   /** Path ("/pricing") or absolute URL. Omit on pages with no real URL of
@@ -13,8 +14,6 @@ type SEOHeadProps = {
 
 const SITE_NAME = "Luxen Digital";
 const SITE_URL = "https://luxendigital.com";
-const DEFAULT_OG_IMAGE =
-  "https://vibe.filesafe.space/1788847884528312040/attachments/2376e462-ac48-4064-8fcb-fe02fd5c4f1f.png";
 
 /**
  * Centralized SEO head manager. Renders all title, meta, canonical,
@@ -25,7 +24,7 @@ export function SEOHead({
   title,
   description,
   canonical,
-  ogImage = DEFAULT_OG_IMAGE,
+  ogImage = LOGO_URL,
   noIndex = false,
   schemaJson,
 }: SEOHeadProps) {
