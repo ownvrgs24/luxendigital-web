@@ -44,7 +44,7 @@ const ServicePage = () => {
   return (
     <div id="top" className="relative min-h-screen bg-background">
       <SEOHead
-        title={`${svc.title} | Luxen Digital`}
+        title={svc.title}
         description={copy.meta}
         canonical={`/services/${svc.slug}`}
         schemaJson={{

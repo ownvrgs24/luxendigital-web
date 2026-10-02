@@ -9,8 +9,8 @@ const FaqPage = () => {
   return (
     <div id="top" className="relative min-h-screen bg-background">
       <SEOHead
-        title="FAQ — Everything You Need to Know About Luxen Digital"
-        description="Straight answers for business owners considering a premium website and AI automation system built by Luxen Digital. Pricing, timelines, ownership, AI tools, and more."
+        title="Everything you need to know."
+        description="Straight answers for business owners considering a website and automation system built by Luxen Digital."
         canonical="/faq"
         schemaJson={{
           "@context": "https://schema.org",

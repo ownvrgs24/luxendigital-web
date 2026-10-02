@@ -28,7 +28,7 @@ const LegalPage = () => {
   return (
     <div id="top" className="relative min-h-screen bg-background">
       <SEOHead
-        title={`${doc.title} | Luxen Digital`}
+        title={doc.title}
         description={doc.summary}
         canonical={`/legal/${doc.slug}`}
       />

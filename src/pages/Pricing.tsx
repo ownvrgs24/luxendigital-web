@@ -21,8 +21,8 @@ const PricingPage = () => {
   return (
     <div id="top" className="relative min-h-screen bg-background">
       <SEOHead
-        title="Pricing — Simple, Transparent Plans | Luxen Digital"
-        description="Transparent monthly plans for service businesses. Start with the essentials, then add automation when you're ready. No long-term contracts."
+        title="Pick the plan that matches how busy you want to be."
+        description="Start with a website that actually converts, then turn on the automation that follows up for you. Month to month, cancel any time."
         canonical="/pricing"
         schemaJson={{
           "@context": "https://schema.org",

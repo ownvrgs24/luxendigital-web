@@ -50,8 +50,8 @@ const Index = () => {
   return (
     <div className="relative min-h-screen bg-background">
       <SEOHead
-        title="Luxen Digital — Premium Websites & AI Systems for Service Businesses"
-        description="Luxen Digital builds premium websites and AI-powered business systems for local service businesses. Generate more leads, automate follow-up, book appointments, and grow faster."
+        title="Stop losing sales to a dead website."
+        description="Luxen combines a high-converting website, CRM, automated follow-up, reviews, and AI into one system built to help your business capture and convert more opportunities."
         canonical="/"
         schemaJson={{
           "@context": "https://schema.org",

@@ -52,8 +52,8 @@ const WhyLuxenPage = () => {
   return (
     <div id="top" className="relative min-h-screen bg-background">
       <SEOHead
-        title="Why Luxen Digital — A Premium Technology Partner, Not Just a Web Design Company"
-        description="Most web designers treat launch as the finish line. At Luxen Digital, it's where the partnership begins. Built for service businesses, designed to convert, with automation that works around the clock."
+        title="A premium technology partner, not just a web design company."
+        description="Most web designers treat launch as the finish line. For us it is where the partnership begins — and this is the shortest way to show you what that looks like."
         canonical="/why-luxen"
         schemaJson={{
           "@context": "https://schema.org",

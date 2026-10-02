@@ -14,8 +14,8 @@ const TestimonialsPage = () => {
           number nobody is checking — and Google treats a stale or unbacked
           rating as exactly the kind of markup it penalises. */}
       <SEOHead
-        title="Reviews — What Our Clients Say | Luxen Digital"
-        description="Verified reviews from service business owners who stopped doing it all manually. Read what Luxen Digital's websites and automation systems did for their businesses."
+        title="Owners who stopped doing it all manually."
+        description="Every review below is left by a real client and published unedited. More leads, faster follow-up, and systems that run while they work."
         canonical="/testimonials"
       />
       <Navbar />

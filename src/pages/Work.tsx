@@ -16,9 +16,10 @@ const WorkPage = () => {
   return (
     <div id="top" className="relative min-h-screen bg-background">
       <SEOHead
-        title="Our Work — Premium Website Case Studies | Luxen Digital"
-        description="A look at what we build. Custom, conversion-focused websites for service businesses — designed around the business, not a template."
+        title="Sites that book the job, not just win the compliment."
+        description="Every build is custom — designed around how the business actually wins work, then wired into the follow-up that runs after the visitor leaves."
         canonical="/work"
+        ogImage={PROJECTS[0].img}
         schemaJson={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",

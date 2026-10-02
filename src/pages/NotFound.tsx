@@ -16,12 +16,11 @@ const NotFound = () => {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <SEOHead
-        title="Page Not Found — Luxen Digital"
-        description="The page you're looking for doesn't exist. Return to the Luxen Digital homepage to explore premium websites and AI systems for service businesses."
-        canonical="/404"
+        title="Oops! Page not found"
+        description="The page you're looking for doesn't exist or has moved."
         noIndex
       />
-      <div className="text-center">
+      <main className="text-center">
         <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
           404
         </p>
@@ -37,7 +36,7 @@ const NotFound = () => {
         >
           <RollLabel>Return to Home</RollLabel>
         </a>
-      </div>
+      </main>
     </div>
   );
 };
