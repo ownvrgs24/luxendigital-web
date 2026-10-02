@@ -42,10 +42,10 @@ type Props = {
   /** Extra classes for the <video> itself — object-position, mostly. */
   videoClassName?: string;
   /**
-   * Content laid over the video whenever it isn't playing — a hero headline
-   * and its calls to action. It animates away on play and back on pause, and
-   * gets `started`/`ended` so its button can say the right thing: play it,
-   * resume it, or watch it again.
+   * Content laid over the video before first play and after the end — a hero
+   * headline and its calls to action. It animates away on play and back when
+   * the video finishes, and gets `started`/`ended` so its button can say
+   * "play" or "watch again".
    */
   overlay?: (api: {
     play: () => void;
@@ -322,11 +322,12 @@ export function VideoPlayer({
       )}
 
       {/* The curtain: scrim plus whatever the page wants over the still. It
-          clears on play and comes back any time playback stops.
+          clears on play and only comes back at the end; an ordinary pause
+          keeps the frame clear and leaves the control bar to resume.
           `initial={false}` on AnimatePresence means it is simply there on
           first paint and only animates on the returns after that. */}
       <AnimatePresence initial={false}>
-        {!playing ? (
+        {!playing && (!started || ended) ? (
           <motion.div
             key="curtain"
             initial={{ opacity: 0 }}
@@ -377,7 +378,8 @@ export function VideoPlayer({
           crowds the poster frame with things that do nothing yet. */}
       <div
         className={`absolute inset-x-3 bottom-3 rounded-2xl border border-white/10 bg-black/45 px-3 pb-2 pt-1.5 backdrop-blur-xl transition-all duration-300 sm:inset-x-5 sm:bottom-5 sm:px-4 sm:pb-2.5 ${
-          started && controlsUp
+          // Off while the curtain is up, so the two never stack.
+          started && !ended && controlsUp
             ? "translate-y-0 opacity-100"
             : "pointer-events-none translate-y-2 opacity-0"
         }`}

@@ -19,7 +19,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const App = () => (
   <HelmetProvider>
     <BookingProvider>
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Suspense fallback={<div className="min-h-screen bg-background" />}>
           <Routes>
             <Route path="/" element={<Index />} />

@@ -462,10 +462,14 @@
 }
 
 /* The LeadConnector chat bubble floats at a z-index no page element can
-   outrank, so while the booking modal is open it is hidden outright. */
+   outrank, so while the booking modal or the mobile menu is open it is
+   hidden outright. */
 body.booking-open chat-widget,
 body.booking-open #lc_text-widget,
-body.booking-open #lc_text-widget--btn {
+body.booking-open #lc_text-widget--btn,
+body.menu-open chat-widget,
+body.menu-open #lc_text-widget,
+body.menu-open #lc_text-widget--btn {
   display: none !important;
 }
 

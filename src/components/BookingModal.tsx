@@ -208,7 +208,7 @@ function BookingModalContent({ close }: { close: () => void }) {
           aria-hidden="true"
           className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-border sm:hidden"
         />
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border/60 px-5 pb-3.5 pt-3 sm:items-center sm:py-4">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border/60 px-5 pb-3.5 pt-3 sm:items-center sm:py-4 [@media(max-height:760px)]:sm:py-3">
           <div className="min-w-0">
             <p
               id="booking-title"
@@ -247,8 +247,9 @@ function BookingModalContent({ close }: { close: () => void }) {
 
         {/* overflow-x-hidden: the steps slide in sideways, and with only
             overflow-y set the browser treats x as auto too, flashing a
-            horizontal scrollbar mid-transition. */}
-        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain sm:min-h-[420px]">
+            horizontal scrollbar mid-transition. The scrollbar itself is hidden;
+            the body still scrolls by wheel/touch if a step can't fit. */}
+        <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-width:none] sm:min-h-[min(420px,55dvh)] [&::-webkit-scrollbar]:hidden">
           <AnimatePresence mode="wait">
             {done ? (
               <motion.div
@@ -290,7 +291,9 @@ function BookingModalContent({ close }: { close: () => void }) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -24 }}
                 transition={{ duration: 0.3, ease }}
-                className="flex flex-col gap-3 p-5 sm:gap-4 sm:p-7"
+                // Short viewports (laptops, landscape phones) get tighter spacing so
+                // the whole step fits without scrolling.
+                className="flex flex-col gap-3 p-5 sm:gap-4 sm:p-7 [@media(max-height:760px)]:gap-2 [@media(max-height:760px)]:py-4 [@media(max-height:760px)]:sm:px-6"
               >
                 <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-accent">
                   <span>
@@ -300,11 +303,11 @@ function BookingModalContent({ close }: { close: () => void }) {
 
                 {current ? (
                   <>
-                    <h3 className="font-display text-lg font-semibold leading-tight tracking-tight text-foreground sm:text-2xl">
+                    <h3 className="font-display text-lg font-semibold leading-tight tracking-tight text-foreground sm:text-2xl [@media(max-height:760px)]:sm:text-xl">
                       {current.label}
                     </h3>
                     <div
-                      className={`mt-1 grid gap-2 sm:gap-2.5 ${
+                      className={`mt-1 grid gap-2 sm:gap-2.5 [@media(max-height:760px)]:sm:gap-2 ${
                         current.options.length > 6
                           ? "grid-cols-2"
                           : "grid-cols-1"
@@ -317,7 +320,7 @@ function BookingModalContent({ close }: { close: () => void }) {
                             key={opt}
                             onClick={() => selectAnswer(current.key, opt)}
                             aria-pressed={selected}
-                            className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3.5 py-3 text-left text-sm font-medium leading-snug transition-all duration-200 sm:px-4 sm:py-3.5 sm:text-base ${
+                            className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3.5 py-3 text-left text-sm font-medium leading-snug transition-all duration-200 sm:px-4 sm:py-3.5 sm:text-base [@media(max-height:760px)]:py-2.5 [@media(max-height:760px)]:sm:py-2.5 ${
                               selected
                                 ? "border-accent bg-accent/5 text-foreground shadow-[0_4px_20px_-8px_hsl(43_90%_55%_/_0.4)]"
                                 : "border-border bg-card/60 text-muted-foreground hover:border-accent/40 hover:text-foreground"
@@ -374,7 +377,7 @@ function BookingModalContent({ close }: { close: () => void }) {
             the step is. Padded for the iPhone home indicator. On the details
             step the button submits the form through the `form` attribute. */}
         {!done && (
-          <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border/60 bg-background px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-3.5 sm:px-7 sm:pb-5 sm:pt-4">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border/60 bg-background px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-3.5 sm:px-7 sm:pb-5 sm:pt-4 [@media(max-height:760px)]:sm:py-3">
             <button
               onClick={back}
               disabled={step === 0 || submitting}

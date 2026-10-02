@@ -95,68 +95,103 @@ const WhyLuxenPage = () => {
           <VideoPlayer
             src={VIDEO_SRC}
             title="Why Luxen Digital"
-            className="h-[94svh] min-h-[560px] w-full"
+            // Phones get a 4:5 frame with the copy below it. Laid over a
+            // portrait crop of 16:9 footage, the copy covered the subject.
+            className="aspect-[4/5] w-full lg:aspect-auto lg:h-[94svh] lg:min-h-[560px]"
             // A wide hero crops a 16:9 source hard. Biasing the crop upward
             // keeps the head in frame and takes the loss off the bottom,
-            // which the copy covers anyway.
-            videoClassName="object-[center_28%]"
-            overlay={({ play, started, ended }) => (
-              <div className="flex h-full flex-col justify-end px-6 pb-28 pt-28 sm:pb-32 lg:px-10">
-                <div className="mx-auto w-full max-w-4xl">
-                  <motion.p
-                    {...lift(0)}
-                    className="text-sm font-medium uppercase tracking-[0.25em] text-accent"
-                  >
-                    Why Luxen Digital
-                  </motion.p>
-                  <motion.h1
-                    {...lift(0.06)}
-                    className="mt-4 max-w-3xl font-display text-3xl font-medium tracking-tight text-balance text-white sm:text-4xl lg:text-5xl"
-                  >
-                    A premium technology partner, not just a web design company.
-                  </motion.h1>
-                  <motion.p
-                    {...lift(0.12)}
-                    className="mt-6 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg"
-                  >
-                    Most web designers treat launch as the finish line. For us
-                    it is where the partnership begins — and this is the
-                    shortest way to show you what that looks like.
-                  </motion.p>
+            // which the copy covers anyway. On phones the speaker sits right
+            // of centre, so the narrow crop slides over to keep him framed.
+            videoClassName="object-[70%_28%] lg:object-[center_28%]"
+            overlay={({ play, ended }) => (
+              <>
+                {/* The whole frame is the tap target; the pill sits low so
+                    it stays off the speaker's face. */}
+                <button
+                  type="button"
+                  onClick={play}
+                  className="absolute inset-0 flex items-end justify-center pb-6 lg:hidden"
+                >
+                  <span className="btn-gold inline-flex items-center gap-2.5 rounded-full px-6 py-3 text-sm font-bold">
+                    <Play className="h-4 w-4 fill-current" />
+                    {ended ? "Watch again" : "Play the film"}
+                  </span>
+                </button>
+                <div className="hidden h-full flex-col justify-end px-10 pb-32 pt-28 lg:flex">
+                  <div className="mx-auto w-full max-w-4xl">
+                    <motion.p
+                      {...lift(0)}
+                      className="text-sm font-medium uppercase tracking-[0.25em] text-accent"
+                    >
+                      Why Luxen Digital
+                    </motion.p>
+                    <motion.h1
+                      {...lift(0.06)}
+                      className="mt-4 max-w-3xl font-display text-3xl font-medium tracking-tight text-balance text-white sm:text-4xl lg:text-5xl"
+                    >
+                      A premium technology partner, not just a web design
+                      company.
+                    </motion.h1>
+                    <motion.p
+                      {...lift(0.12)}
+                      className="mt-6 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg"
+                    >
+                      Most web designers treat launch as the finish line. For us
+                      it is where the partnership begins — and this is the
+                      shortest way to show you what that looks like.
+                    </motion.p>
 
-                  <motion.div
-                    {...lift(0.18)}
-                    className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
-                  >
-                    <button
-                      onClick={play}
-                      className="btn-gold group inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-base font-bold"
+                    <motion.div
+                      {...lift(0.18)}
+                      className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
                     >
-                      <Play className="h-5 w-5 fill-current" />
-                      {/* "Resume" would be a lie at the end, where play
-                          restarts from zero. */}
-                      <RollLabel>
-                        {ended
-                          ? "Watch again"
-                          : started
-                            ? "Resume watching"
-                            : "Play the film"}
-                      </RollLabel>
-                    </button>
-                    {/* A hairline outline on video reads as unfinished. Give
+                      <button
+                        onClick={play}
+                        className="btn-gold group inline-flex items-center justify-center gap-3 rounded-full px-8 py-4 text-base font-bold"
+                      >
+                        <Play className="h-5 w-5 fill-current" />
+                        <RollLabel>
+                          {ended ? "Watch again" : "Play the film"}
+                        </RollLabel>
+                      </button>
+                      {/* A hairline outline on video reads as unfinished. Give
                         it a glass body so it holds its own beside the gold. */}
-                    <button
-                      onClick={openBooking}
-                      className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-md transition-colors duration-300 hover:border-white/40 hover:bg-white/20"
-                    >
-                      Book a Call
-                      <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                    </button>
-                  </motion.div>
+                      <button
+                        onClick={openBooking}
+                        className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-md transition-colors duration-300 hover:border-white/40 hover:bg-white/20"
+                      >
+                        Book a Call
+                        <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                      </button>
+                    </motion.div>
+                  </div>
                 </div>
-              </div>
+              </>
             )}
           />
+        </section>
+
+        {/* Phone copy — under the frame instead of on it. The play button
+            lives on the video itself, so only the call stays here. */}
+        <section className="px-6 pt-10 lg:hidden">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-accent">
+            Why Luxen Digital
+          </p>
+          <h1 className="mt-4 font-display text-3xl font-medium tracking-tight text-balance text-foreground">
+            A premium technology partner, not just a web design company.
+          </h1>
+          <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+            Most web designers treat launch as the finish line. For us it is
+            where the partnership begins — and this is the shortest way to show
+            you what that looks like.
+          </p>
+          <button
+            onClick={openBooking}
+            className="btn-gold group mt-8 flex h-14 w-full items-center justify-center gap-2.5 rounded-full px-8 text-base font-bold"
+          >
+            <RollLabel>Book a Call</RollLabel>
+            <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+          </button>
         </section>
 
         {/* The promise, in three */}

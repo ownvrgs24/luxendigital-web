@@ -315,7 +315,12 @@ export function Navbar() {
             height={1254}
             decoding="async"
           />
-          Luxen Digital
+          {/* Same roll as the gold buttons, but the second line says where
+              the link goes. The link's aria-label already names it. */}
+          <span className="roll-label" aria-hidden="true">
+            <span>Luxen Digital</span>
+            <span>Home</span>
+          </span>
         </a>
 
         <ul className="nav__links">

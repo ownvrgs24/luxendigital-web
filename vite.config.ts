@@ -20,7 +20,12 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
-    mode === "development" && componentTagger({ tailwindConfig: true }),
+    // The tagger feeds LeadConnector's visual editor, but it puts a ref on
+    // every component, so React warns once per function component. Opt in
+    // with VIBE_TAGGER=1 wherever the editor runs.
+    mode === "development" &&
+      process.env.VIBE_TAGGER === "1" &&
+      componentTagger({ tailwindConfig: true }),
   ].filter(Boolean),
   resolve: {
     alias: {
