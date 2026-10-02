@@ -208,7 +208,7 @@ function BookingModalContent({ close }: { close: () => void }) {
           aria-hidden="true"
           className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-border sm:hidden"
         />
-        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border/60 px-5 pb-3.5 pt-3 sm:items-center sm:py-4 [@media(max-height:760px)]:sm:py-3">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border/60 px-5 pb-3.5 pt-3 sm:items-center sm:px-7 sm:py-4 [@media(max-height:760px)]:sm:px-6 [@media(max-height:760px)]:sm:py-3">
           <div className="min-w-0">
             <p
               id="booking-title"
@@ -377,14 +377,14 @@ function BookingModalContent({ close }: { close: () => void }) {
             the step is. Padded for the iPhone home indicator. On the details
             step the button submits the form through the `form` attribute. */}
         {!done && (
-          <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border/60 bg-background px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-3.5 sm:px-7 sm:pb-5 sm:pt-4 [@media(max-height:760px)]:sm:py-3">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-t border-border/60 bg-background px-5 pb-[max(0.875rem,env(safe-area-inset-bottom))] pt-3.5 sm:px-7 sm:pb-5 sm:pt-4 [@media(max-height:760px)]:sm:px-6 [@media(max-height:760px)]:sm:py-3">
             <button
               onClick={back}
               disabled={step === 0 || submitting}
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground sm:px-4"
+              className="-ml-3 inline-flex items-center gap-1.5 rounded-full px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30 disabled:hover:text-muted-foreground sm:-ml-4 sm:px-4"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back
+              <ArrowLeft className="h-4 w-4 shrink-0" />
+              <span className="leading-none">Back</span>
             </button>
             {isDetails ? (
               <button
